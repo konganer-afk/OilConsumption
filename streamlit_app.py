@@ -1,79 +1,88 @@
 import streamlit as st
 import pandas as pd
 
-# 1. Page Configuration
-st.set_page_config(
-    page_title="Dual Mode Savings Calculator",
-    page_icon="🚗",
-    layout="wide"
-)
-
-# 2. Refined UI Styling (Added title margin)
+# 1. Page Config & Professional Dashboard Styling
+st.set_page_config(page_title="Dual Mode Savings", page_icon="⛽", layout="wide")
 st.markdown("""
     <style>
-    /* Standardizes the top padding */
-    .block-container { padding-top: 1rem; padding-bottom: 0rem; }
+    /* Balanced padding to ensure shadows breathe without forcing a scroll */
+    .block-container { padding-top: 1.5rem; padding-bottom: 1rem; }
     
-    /* Adds breathing room specifically for the title so it isn't cut off */
-    h1 { margin-top: 1.5rem !important; margin-bottom: 1rem !important; }
-    
-    /* Style the metric cards */
-    .stMetric {
-        background-color: #ffffff;
-        padding: 10px;
-        border-radius: 8px;
-        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    /* BIG Sidebar Title */
+    .sidebar-title {
+        font-size: 2.8rem !important; 
+        font-weight: 900; 
+        line-height: 1.0;
+        margin-bottom: 1.2rem; 
+        color: #1a7fa3;
+        text-transform: uppercase;
+        letter-spacing: -1px;
     }
-    
-    /* Tighter spacing between standard blocks */
-    [data-testid="stVerticalBlock"] { gap: 0.5rem; }
+
+    /* THE FLASHY RESULT (Optimized spacing for shadows) */
+    .flashy-result {
+        background: linear-gradient(135deg, #29B5E8 0%, #1a7fa3 100%);
+        color: white; 
+        padding: 40px 10px; 
+        border-radius: 18px; 
+        text-align: center; 
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+        margin-bottom: 45px; /* Fixed: Clears the shadow from elements below */
+        border: 2px solid rgba(255,255,255,0.2);
+    }
+    .flash_label { font-size: 1.3rem; text-transform: uppercase; letter-spacing: 5px; opacity: 0.9; margin: 0; }
+    .flash_val { 
+        font-size: 8.5rem !important; 
+        font-weight: 900; margin: -10px 0; line-height: 1; 
+        text-shadow: 4px 4px 20px rgba(0,0,0,0.3); 
+    }
+    .flash_unit { font-size: 1.6rem; font-weight: 700; margin: 0; letter-spacing: 2px; }
+
+    /* UI Refinement */
+    .stMetric { padding: 5px !important; }
     </style>
     """, unsafe_allow_html=True)
 
-# 3. Header
-st.title("🚗 Dual Mode Fuel Savings Calculator")
+# 2. Sidebar - Branding & Controls
+st.sidebar.markdown('<p class="sidebar-title">DUAL MODE<br>FUEL SAVINGS</p>', unsafe_allow_html=True)
+st.sidebar.header("🕹️ Controls")
+daily_miles = st.sidebar.slider("Daily Commute (Miles)", 0, 200, 30)
+days_per_week = st.sidebar.slider("Days Driven per Week", 1, 7, 5)
+fuel_price = st.sidebar.number_input("Fuel Price (AUD/Litre)", value=1.85)
+st.sidebar.divider()
+curr_l100 = st.sidebar.number_input("Current Car (L/100km)", value=12.0)
+new_l100 = st.sidebar.number_input("New Dual Mode (L/100km)", value=5.5)
 
-# 4. Sidebar Inputs
-with st.sidebar:
-    st.header("📍 Drive & Fuel")
-    daily_km = st.slider("Daily Commute (km)", 5, 300, 50)
-    fuel_price = st.number_input("Fuel Price (AUD/L)", value=2.10, step=0.01)
-    ice_cons = st.number_input("ICE Car (L/100km)", value=9.5, step=0.1)
-    st.divider()
-    st.header("⚡ DM Specs")
-    dm_cons = st.number_input("DM Tech (L/100km)", value=1.5, step=0.1)
+# 3. Logic & Hybrid Unit Conversion (1 mile = 1.60934 km)
+ann_miles = daily_miles * days_per_week * 52
+ann_km = ann_miles * 1.60934
+curr_ann = (ann_km / 100) * curr_l100 * fuel_price
+new_ann = (ann_km / 100) * new_l100 * fuel_price
+savings = curr_ann - new_ann
 
-# 5. Calculations
-ann_km = daily_km * 365
-ice_cost = (ann_km / 100) * ice_cons * fuel_price
-dm_cost = (ann_km / 100) * dm_cons * fuel_price
-ann_sav = ice_cost - dm_cost
-mon_sav = ann_sav / 12
-litres = ann_sav / fuel_price
+# 4. The Main Dashboard Hero
+st.markdown(f"""
+    <div class="flashy-result">
+        <p class="flash_label">Estimated Annual Savings</p>
+        <h1 class="flash_val">${savings:,.2f}</h1>
+        <p class="flash_unit">AUD PER YEAR</p>
+    </div>
+    """, unsafe_allow_html=True)
 
-# 6. Main Dashboard Area
-col_m1, col_m2 = st.columns(2)
-col_m1.metric("Monthly Savings", f"${mon_sav:,.2f}")
-col_m2.metric("Annual Savings", f"${ann_sav:,.2f}")
-
-st.divider()
-
-# 7. Side-by-Side Chart and Result (Scroll-free layout)
-col_chart, col_result = st.columns([1.5, 1])
+# 5. Visual Insights Layout
+col_chart, col_stats = st.columns([2, 1], gap="large")
 
 with col_chart:
-    st.write("📊 **Cost Comparison**")
-    chart_data = pd.DataFrame({
-        'Vehicle': ['ICE', 'DM Tech'],
-        'Cost (AUD)': [round(ice_cost, 2), round(dm_cost, 2)]
+    st.subheader("Cost Comparison")
+    chart_df = pd.DataFrame({
+        "Vehicle": ["Current ICE", "New Dual Mode"],
+        "Annual Cost": [curr_ann, new_ann]
     })
-    st.bar_chart(chart_data, x='Vehicle', y='Cost (AUD)', height=280)
+    st.bar_chart(chart_df, x="Vehicle", y="Annual Cost", color="Vehicle")
 
-with col_result:
-    st.write("💡 **The Result**")
-    st.success(f"""
-    **{litres:.0f} Litres** saved yearly!
-    
-    That's **{litres/50:.0f} full tanks**
-    of gas back in your pocket.
-    """)
+with col_stats:
+    st.subheader("Key Metrics")
+    st.metric("Current Monthly", f"${(curr_ann/12):,.2f}")
+    st.metric("New Monthly", f"${(new_ann/12):,.2f}", delta=f"-${(savings/12):,.2f}")
+    st.metric("Annual Distance", f"{ann_miles:,} Mi")
+    st.success(f"**{((curr_ann-new_ann)/curr_ann)*100:.1f}%** cheaper than your current ride!")
