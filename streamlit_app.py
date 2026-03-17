@@ -40,12 +40,12 @@ st.markdown("""
 st.sidebar.markdown('<p class="sidebar-title">DUAL MODE<br>FUEL SAVINGS</p>', unsafe_allow_html=True)
 st.sidebar.header("🕹️ Controls")
 
-# Toggle
-unit = st.sidebar.radio("Distance Unit", ["Miles", "km"], horizontal=True)
-if unit == "Miles":
-    daily_miles = st.sidebar.slider("Daily Commute (Miles)", 0, 200, 30)
+# Toggle — km. is default (index=0)
+unit = st.sidebar.radio("Distance Unit", ["km.", "mi."], horizontal=True)
+if unit == "mi.":
+    daily_miles = st.sidebar.slider("Daily Commute (mi.)", 0, 200, 30)
 else:
-    daily_km_input = st.sidebar.slider("Daily Commute (km)", 0, 320, 48)
+    daily_km_input = st.sidebar.slider("Daily Commute (km.)", 0, 320, 48)
     daily_miles = daily_km_input / 1.60934
 
 days_per_week = st.sidebar.slider("Days Driven per Week", 1, 7, 5)
@@ -83,9 +83,8 @@ with col_stats:
     st.subheader("Key Metrics")
     st.metric("Current Monthly", f"${(curr_ann/12):,.2f}")
     st.metric("New Monthly", f"${(new_ann/12):,.2f}", delta=f"-${(savings/12):,.2f}")
-    # Annual Distance based on selected unit
-    if unit == "Miles":
-        st.metric("Annual Distance", f"{ann_miles:,.0f} mi")
+    if unit == "mi.":
+        st.metric("Annual Distance", f"{ann_miles:,.0f} mi.")
     else:
-        st.metric("Annual Distance", f"{ann_km:,.0f} km")
+        st.metric("Annual Distance", f"{ann_km:,.0f} km.")
     st.success(f"**{((curr_ann-new_ann)/curr_ann)*100:.1f}%** cheaper than your current ride!")
