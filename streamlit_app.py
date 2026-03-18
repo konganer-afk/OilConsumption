@@ -36,11 +36,16 @@ st.markdown("""
     </style>
     """, unsafe_allow_html=True)
 
-# 2. Sidebar - Branding & Controls
+# 2. Sidebar - Branding & Mode Selector
 st.sidebar.markdown('<p class="sidebar-title">DUAL MODE<br>FUEL SAVINGS</p>', unsafe_allow_html=True)
+
+# --- Mode toggle at the top ---
+mode = st.sidebar.radio("Comparison Mode", ["ICE to PHEV", "ICE to EV"], horizontal=True)
+st.sidebar.divider()
+
 st.sidebar.header("🕹️ Controls")
 
-# Toggle — km. is default (index=0)
+# Distance unit toggle
 unit = st.sidebar.radio("Distance Unit", ["km.", "mi."], horizontal=True)
 if unit == "mi.":
     daily_miles = st.sidebar.slider("Daily Commute (mi.)", 0, 200, 30)
@@ -51,15 +56,33 @@ else:
 days_per_week = st.sidebar.slider("Days Driven per Week", 1, 7, 5)
 fuel_price = st.sidebar.number_input("Fuel Price (AUD/Litre)", value=1.85)
 st.sidebar.divider()
-curr_l100 = st.sidebar.number_input("Current Car (L/100km)", value=12.0)
-new_l100 = st.sidebar.number_input("New Dual Mode (L/100km)", value=5.5)
 
-# 3. Logic & Hybrid Unit Conversion (1 mile = 1.60934 km)
+# ICE inputs (shared by both modes)
+curr_l100 = st.sidebar.number_input("Current ICE Car (L/100km)", value=12.0)
+
+# Mode-specific inputs
+if mode == "ICE to PHEV":
+    st.sidebar.header("⚡ PHEV Specs")
+    new_l100 = st.sidebar.number_input("New Dual Mode PHEV (L/100km)", value=5.5)
+else:
+    st.sidebar.header("🔋 EV Specs")
+    ev_kw100 = st.sidebar.slider("EV Consumption (kWh/100km)", 13, 25, 18)
+    elec_price = st.sidebar.number_input("Electricity Price (AUD/kWh)", value=0.30, step=0.01)
+
+# 3. Logic & Unit Conversion
 ann_miles = daily_miles * days_per_week * 52
 ann_km = ann_miles * 1.60934
 curr_ann = (ann_km / 100) * curr_l100 * fuel_price
-new_ann = (ann_km / 100) * new_l100 * fuel_price
-savings = curr_ann - new_ann
+
+if mode == "ICE to PHEV":
+    new_ann = (ann_km / 100) * new_l100 * fuel_price
+    savings = curr_ann - new_ann
+    new_label = "New Dual Mode"
+
+else:  # ICE to EV
+    new_ann = (ann_km / 100) * ev_kw100 * elec_price
+    savings = curr_ann - new_ann
+    new_label = "Full EV"
 
 # 4. The Main Dashboard Hero
 st.markdown(f"""
@@ -72,19 +95,23 @@ st.markdown(f"""
 
 # 5. Visual Insights Layout
 col_chart, col_stats = st.columns([2, 1], gap="large")
+
 with col_chart:
     st.subheader("Cost Comparison")
     chart_df = pd.DataFrame({
-        "Vehicle": ["Current ICE", "New Dual Mode"],
+        "Vehicle": ["Current ICE", new_label],
         "Annual Cost": [curr_ann, new_ann]
     })
     st.bar_chart(chart_df, x="Vehicle", y="Annual Cost", color="Vehicle")
+
 with col_stats:
     st.subheader("Key Metrics")
     st.metric("Current Monthly", f"${(curr_ann/12):,.2f}")
-    st.metric("New Monthly", f"${(new_ann/12):,.2f}", delta=f"-${(savings/12):,.2f}")
+    st.metric(f"{new_label} Monthly", f"${(new_ann/12):,.2f}", delta=f"-${(savings/12):,.2f}")
     if unit == "mi.":
         st.metric("Annual Distance", f"{ann_miles:,.0f} mi.")
     else:
         st.metric("Annual Distance", f"{ann_km:,.0f} km.")
-    st.success(f"**{((curr_ann-new_ann)/curr_ann)*100:.1f}%** cheaper than your current ride!")
+    if mode == "ICE to EV":
+        st.metric("EV Energy Cost", f"${new_ann:,.2f}/yr")
+    st.success(f"**{((curr_ann - new_ann) / curr_ann) * 100:.1f}%** cheaper than your current ride!")
