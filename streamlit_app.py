@@ -5,7 +5,7 @@ import pandas as pd
 st.set_page_config(page_title="Dual Mode Savings", page_icon="⛽", layout="wide")
 st.markdown("""
     <style>
-    .block-container { padding-top: 1.5rem; padding-bottom: 1rem; }
+    .block-container { padding-top: 3.5rem; padding-bottom: 1rem; }
     .sidebar-title {
         font-size: 2.8rem !important; 
         font-weight: 900; 
@@ -63,7 +63,7 @@ else:
 days_per_week = st.sidebar.slider("Days Driven per Week", 1, 7, 5)
 
 fuel_price = st.sidebar.number_input("Fuel Price (AUD/Litre)", value=1.85, step=0.01)
-st.sidebar.caption("Default: ABS/DISER national average, Mar 2026. Enter your local price for accuracy.")
+st.sidebar.caption("Default: ABS/DISER national average. Enter your local price for accuracy.")
 
 st.sidebar.divider()
 
@@ -73,13 +73,13 @@ st.sidebar.caption("Tip: Check your Green Vehicle Guide rating or fuel receipt a
 if mode == "ICE to PHEV":
     st.sidebar.header("⚡ PHEV Specs")
     new_l100 = st.sidebar.number_input("New Dual Mode PHEV (L/100km)", value=5.5)
-    st.sidebar.caption("Default based on Green Vehicle Guide PHEV average, Mar 2026.")
+    st.sidebar.caption("Default based on Green Vehicle Guide PHEV average.")
 else:
     st.sidebar.header("🔋 EV Specs")
     ev_kw100 = st.sidebar.slider("EV Consumption (kWh/100km)", 13, 25, 18)
     st.sidebar.caption("Range: 13 kWh (small hatch) to 25 kWh (large SUV). Source: Green Vehicle Guide.")
     elec_price = st.sidebar.number_input("Electricity Price (AUD/kWh)", value=0.30, step=0.01)
-    st.sidebar.caption("Default: AEMO national average, Mar 2026. Enter your plan's rate for accuracy.")
+    st.sidebar.caption("Default: AEMO national average. Enter your plan's rate for accuracy.")
 
 # 3. Logic & Unit Conversion
 ann_miles = daily_miles * days_per_week * 52
@@ -153,26 +153,26 @@ with st.expander("📋 Assumptions & Data Sources"):
     - Unit conversion: 1 mile = 1.60934 km.
 
     **Fuel Price**
-    - Default fuel price: **$1.85 AUD/Litre** — ABS/DISER national average, March 2026.
+    - Default fuel price: **$1.85 AUD/Litre** — ABS/DISER national average.
     - Source: [Australian Bureau of Statistics](https://www.abs.gov.au) | [DISER](https://www.energy.gov.au)
 
     **ICE Fuel Consumption**
-    - Default ICE consumption: **12.0 L/100km** — Green Vehicle Guide national average for passenger vehicles, March 2026.
+    - Default ICE consumption: **12.0 L/100km** — Green Vehicle Guide national average for passenger vehicles.
     - Source: [Green Vehicle Guide](https://www.greenvehicleguide.gov.au)
 
-    {"**PHEV Consumption** — Default: **5.5 L/100km** — Green Vehicle Guide PHEV average, March 2026. Source: [Green Vehicle Guide](https://www.greenvehicleguide.gov.au)" if mode == "ICE to PHEV" else ""}
+    {"**PHEV Consumption** — Default: **5.5 L/100km** — Green Vehicle Guide PHEV average. Source: [Green Vehicle Guide](https://www.greenvehicleguide.gov.au)" if mode == "ICE to PHEV" else ""}
 
     {"**EV Electricity Consumption** — Range: **13–25 kWh/100km** (small hatch to large SUV). Source: [Green Vehicle Guide](https://www.greenvehicleguide.gov.au)" if mode == "ICE to EV" else ""}
 
-    {"**Electricity Price** — Default: **$0.30 AUD/kWh** — AEMO national average, March 2026. Source: [AEMO](https://www.aemo.com.au)" if mode == "ICE to EV" else ""}
+    {"**Electricity Price** — Default: **$0.30 AUD/kWh** — AEMO national average. Source: [AEMO](https://www.aemo.com.au)" if mode == "ICE to EV" else ""}
 
     **Vehicle Segment Note**
-    - For legally compliant comparisons under ACL guidelines, always compare vehicles of equivalent segments 
+    - For legally compliant comparisons under ACL guidelines, always compare vehicles of equivalent segments
       (e.g. small hatch vs. small hatch). Refer to the Green Vehicle Guide for segment classifications.
 
-    **Last Updated:** March 2026 — defaults should be reviewed periodically as fuel and electricity prices change.
+    **Note:** Default values should be reviewed periodically as fuel and electricity prices change.
     """)
 
 # 9. Footer
 st.markdown("---")
-st.caption("© 2026 DM Technology. General estimates only. Not financial advice. Data sources: ABS, DISER, AEMO, Green Vehicle Guide. All defaults reflect national averages as of March 2026.")
+st.caption("General estimates only. Not financial advice. Data sources: ABS, DISER, AEMO, Green Vehicle Guide.")
