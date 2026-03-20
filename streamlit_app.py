@@ -8,24 +8,30 @@ SVG_CAR  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="
 SVG_BOLT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a7fa3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>'
 SVG_PRINT= '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>'
 
-# ── Data ───────────────────────────────────────────────────────────────────────
+# ── Data (sourced from GVG-SearchResults CSV, greenvehicleguide.gov.au) ────────
 ICE_SEGMENTS = {
-    "Average Small SUV":    {"l100": 7.5,  "cite": "C1"},
-    "Average Hatchback":    {"l100": 6.2,  "cite": "C2"},
-    "Average Sedan":        {"l100": 6.8,  "cite": "C3"},
-    "Average Ute (Diesel)": {"l100": 9.5,  "cite": "C4"},
+    "Average Small SUV":    {"l100": 7.5, "cite": "C1"},
+    "Average Hatchback":    {"l100": 6.2, "cite": "C2"},
+    "Average Sedan":        {"l100": 6.8, "cite": "C3"},
+    "Average Ute (Diesel)": {"l100": 9.5, "cite": "C4"},
 }
-BYD_PHEV_MODELS = {
-    "Seal DM-i":      {"val": 4.9, "unit": "L/100km",   "cite": "D1"},
-    "Sealion 6 DM-i": {"val": 5.5, "unit": "L/100km",   "cite": "D2"},
-    "Tang DM-i":      {"val": 6.0, "unit": "L/100km",   "cite": "D3"},
-    "Shark 6 PHEV":   {"val": 7.0, "unit": "L/100km",   "cite": "D4"},
-}
+
+# Wh/km ÷ 10 = kWh/100km. Source: GVG CSV EnergyConsumptionWhkm field.
 BYD_EV_MODELS = {
-    "Atto 3":  {"val": 16.0, "unit": "kWh/100km", "cite": "D1"},
-    "Dolphin": {"val": 12.6, "unit": "kWh/100km", "cite": "D2"},
-    "Seal":    {"val": 14.4, "unit": "kWh/100km", "cite": "D3"},
-    "Shark 6": {"val": 18.5, "unit": "kWh/100km", "cite": "D4"},
+    "Dolphin":  {"val": 12.6, "unit": "kWh/100km", "cite": "D1"},
+    "Seal":     {"val": 13.8, "unit": "kWh/100km", "cite": "D2"},
+    "Atto 3":   {"val": 14.8, "unit": "kWh/100km", "cite": "D3"},
+    "Atto 1":   {"val": 15.5, "unit": "kWh/100km", "cite": "D4"},
+    "Atto 2":   {"val": 17.0, "unit": "kWh/100km", "cite": "D5"},
+    "Sealion 7":{"val": 17.9, "unit": "kWh/100km", "cite": "D6"},
+}
+
+# FuelConsumptionCombined L/100km. Source: GVG CSV.
+BYD_PHEV_MODELS = {
+    "Sealion 6": {"val": 1.1, "unit": "L/100km", "cite": "D1"},
+    "Sealion 8": {"val": 1.1, "unit": "L/100km", "cite": "D2"},
+    "Sealion 5": {"val": 1.2, "unit": "L/100km", "cite": "D3"},
+    "Shark 6":   {"val": 2.0, "unit": "L/100km", "cite": "D4"},
 }
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
@@ -47,29 +53,18 @@ st.markdown("""
     text-transform:uppercase; letter-spacing:-1px;
 }
 
-/* ── Sidebar radio buttons: Comparison Mode + Distance Unit ── */
+/* ── Sidebar radio: small, centered, single line ── */
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] {
-    display:grid!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:8px!important;
+    display:grid!important; grid-template-columns:1fr 1fr!important; gap:8px!important;
 }
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
-    background:white!important;
-    border:1.5px solid #dce8f5!important;
-    border-radius:10px!important;
-    padding:8px 6px!important;
-    cursor:pointer!important;
-    min-height:40px!important;
-    height:40px!important;
-    box-sizing:border-box!important;
-    display:flex!important;
-    flex-direction:row!important;
-    justify-content:center!important;
-    align-items:center!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    transition:border-color 0.15s!important;
-    width:100%!important;
+    background:white!important; border:1.5px solid #dce8f5!important;
+    border-radius:10px!important; padding:8px 4px!important;
+    cursor:pointer!important; min-height:38px!important; height:38px!important;
+    box-sizing:border-box!important; display:flex!important;
+    flex-direction:row!important; justify-content:center!important;
+    align-items:center!important; white-space:nowrap!important;
+    overflow:hidden!important; transition:border-color 0.15s!important; width:100%!important;
 }
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
     border-color:#29B5E8!important;
@@ -83,40 +78,24 @@ st.markdown("""
     color:white!important;
 }
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label p {
-    font-size:0.82rem!important;
-    font-weight:600!important;
-    margin:0!important;
-    text-align:center!important;
-    white-space:nowrap!important;
-    overflow:hidden!important;
-    text-overflow:ellipsis!important;
-    line-height:1!important;
+    font-size:0.78rem!important; font-weight:600!important; margin:0!important;
+    text-align:center!important; white-space:nowrap!important;
+    overflow:hidden!important; text-overflow:ellipsis!important; line-height:1!important;
 }
-[data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-child {
-    display:none!important;
-}
+[data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-child { display:none!important; }
 
-/* ── Main area vehicle card radios ── */
+/* ── Main area vehicle cards ── */
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] {
-    display:grid!important;
-    grid-template-columns:1fr 1fr!important;
-    gap:12px!important;
+    display:grid!important; grid-template-columns:1fr 1fr!important; gap:10px!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
-    background:white!important;
-    border:1.5px solid #dce8f5!important;
-    border-radius:12px!important;
-    padding:16px 18px!important;
-    cursor:pointer!important;
-    min-height:90px!important;
-    height:90px!important;
-    box-sizing:border-box!important;
-    display:flex!important;
-    flex-direction:column!important;
-    justify-content:center!important;
-    align-items:flex-start!important;
-    transition:border-color 0.15s!important;
-    width:100%!important;
+    background:white!important; border:1.5px solid #dce8f5!important;
+    border-radius:12px!important; padding:14px 16px!important;
+    cursor:pointer!important; min-height:78px!important; height:78px!important;
+    box-sizing:border-box!important; display:flex!important;
+    flex-direction:column!important; justify-content:center!important;
+    align-items:flex-start!important; overflow:hidden!important;
+    transition:border-color 0.15s!important; width:100%!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
     border-color:#29B5E8!important;
@@ -126,30 +105,24 @@ st.markdown("""
     border-color:#0a2a5e!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p,
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span,
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) strong {
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span {
     color:white!important;
 }
-[data-testid="stMain"] div[role="radiogroup"] > label > div:first-child {
-    display:none!important;
-}
+[data-testid="stMain"] div[role="radiogroup"] > label > div:first-child { display:none!important; }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p {
-    margin:0 0 3px!important;
-    line-height:1.3!important;
+    margin:0 0 2px!important; line-height:1.25!important; white-space:nowrap!important;
+    overflow:hidden!important; text-overflow:ellipsis!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:first-child {
-    font-size:0.92rem!important;
-    font-weight:700!important;
-    color:#1a1a2e!important;
+    font-size:0.88rem!important; font-weight:700!important; color:#1a1a2e!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:last-child {
-    font-size:0.76rem!important;
-    color:#888!important;
+    font-size:0.72rem!important; color:#888!important;
 }
 
-/* Hero */
+/* ── Hero ── */
 .flashy-result {
-    background: linear-gradient(135deg, #29B5E8 0%, #1a7fa3 100%);
+    background:linear-gradient(135deg,#29B5E8 0%,#1a7fa3 100%);
     color:white; padding:40px 48px; border-radius:18px;
     box-shadow:0 20px 40px rgba(0,0,0,0.2); margin-bottom:32px;
     border:2px solid rgba(255,255,255,0.2);
@@ -162,12 +135,12 @@ st.markdown("""
     display:flex; align-items:center; justify-content:center; gap:16px; margin:0 0 8px;
 }
 .flash_val {
-    font-size:9rem; font-weight:900; line-height:1;
+    font-size:16rem; font-weight:900; line-height:1;
     text-shadow:4px 4px 20px rgba(0,0,0,0.25); margin:0;
 }
 .flash_cite {
     font-size:1.1rem; font-weight:700; opacity:0.8;
-    align-self:flex-start; margin-top:16px;
+    align-self:flex-start; margin-top:24px;
 }
 .flash_side {
     display:flex; flex-direction:column;
@@ -190,7 +163,8 @@ st.markdown("""
 }
 
 /* Badges */
-.badge { display:inline-block; font-size:0.58rem; font-weight:700; padding:2px 7px; border-radius:4px; margin-left:6px; vertical-align:middle; letter-spacing:1px; text-transform:uppercase; }
+.badge { display:inline-block; font-size:0.58rem; font-weight:700; padding:2px 7px;
+    border-radius:4px; margin-left:6px; vertical-align:middle; letter-spacing:1px; text-transform:uppercase; }
 .badge-c { background:#e8f0fe; color:#1a5fa3; }
 .badge-s { background:#e6f4ea; color:#137333; }
 .badge-v { background:#fce8b2; color:#b06000; }
@@ -213,7 +187,7 @@ st.markdown("""
 .cite-legend { margin-top:16px; padding-top:14px; border-top:1px solid #e0eaf3; }
 .cite-legend-title { font-size:0.68rem; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:2px; margin:0 0 8px; }
 .cite-row { font-size:0.78rem; color:#555; margin:4px 0; line-height:1.5; }
-.cite-key { font-weight:700; color:#1a7fa3; min-width:36px; display:inline-block; }
+.cite-key { font-weight:700; color:#1a7fa3; min-width:40px; display:inline-block; }
 
 /* Print */
 .print-summary { font-family:Arial,sans-serif; padding:20px; }
@@ -255,11 +229,11 @@ with col_ice:
     st.markdown('<p class="segment-header">' + SVG_CAR + ' Current ICE Segment</p>', unsafe_allow_html=True)
     ice_keys = list(ICE_SEGMENTS.keys())
     ice_options = [
-        "**" + k + "**\n\n" + str(v["l100"]) + " L/100km · ^[" + v["cite"] + "]"
+        "**" + k + "**\n\n" + str(v["l100"]) + " L/100km  [" + v["cite"] + "]"
         for k, v in ICE_SEGMENTS.items()
     ]
     ice_sel = st.radio("ice_seg", ice_options, index=2, label_visibility="collapsed", key="ice_radio")
-    ice_idx  = ice_options.index(ice_sel)
+    ice_idx = ice_options.index(ice_sel)
     selected_ice_name = ice_keys[ice_idx]
     ice_data = ICE_SEGMENTS[selected_ice_name]
     ice_l100 = ice_data["l100"]
@@ -270,22 +244,22 @@ with col_byd:
         st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD PHEV Model</p>', unsafe_allow_html=True)
         byd_keys = list(BYD_PHEV_MODELS.keys())
         byd_options = [
-            "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + " · ^[" + v["cite"] + "]"
+            "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + "  [" + v["cite"] + "]"
             for k, v in BYD_PHEV_MODELS.items()
         ]
         byd_sel = st.radio("byd_phev", byd_options, index=0, label_visibility="collapsed", key="phev_radio")
-        byd_idx  = byd_options.index(byd_sel)
+        byd_idx = byd_options.index(byd_sel)
         selected_byd_name = byd_keys[byd_idx]
         byd_data = BYD_PHEV_MODELS[selected_byd_name]
     else:
         st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD EV Model</p>', unsafe_allow_html=True)
         byd_keys = list(BYD_EV_MODELS.keys())
         byd_options = [
-            "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + " · ^[" + v["cite"] + "]"
+            "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + "  [" + v["cite"] + "]"
             for k, v in BYD_EV_MODELS.items()
         ]
-        byd_sel = st.radio("byd_ev", byd_options, index=1, label_visibility="collapsed", key="ev_radio")
-        byd_idx  = byd_options.index(byd_sel)
+        byd_sel = st.radio("byd_ev", byd_options, index=0, label_visibility="collapsed", key="ev_radio")
+        byd_idx = byd_options.index(byd_sel)
         selected_byd_name = byd_keys[byd_idx]
         byd_data = BYD_EV_MODELS[selected_byd_name]
 
@@ -381,7 +355,7 @@ st.markdown(
     unsafe_allow_html=True
 )
 
-# ── Assumptions — always visible, pure string concat ──────────────────────────
+# ── Assumptions — always visible ───────────────────────────────────────────────
 if mode == "ICE to PHEV":
     mode_rows = (
         '<tr>'
@@ -403,6 +377,23 @@ else:
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.aemo.com.au" target="_blank">AEMO</a></td>'
         '</tr>'
     )
+
+# Build EV cite rows dynamically
+ev_cite_rows = ""
+if mode == "ICE to EV":
+    for i, (k, v) in enumerate(BYD_EV_MODELS.items(), 1):
+        ev_cite_rows += (
+            '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
+            'BYD ' + k + ' — ' + str(v["val"]) + ' kWh/100km. '
+            'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+        )
+else:
+    for i, (k, v) in enumerate(BYD_PHEV_MODELS.items(), 1):
+        ev_cite_rows += (
+            '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
+            'BYD ' + k + ' — ' + str(v["val"]) + ' L/100km. '
+            'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+        )
 
 assumptions_html = (
     '<div class="assumptions-section">'
@@ -441,17 +432,22 @@ assumptions_html = (
     '</tbody></table>'
     '<div class="cite-legend">'
     '<p class="cite-legend-title">Citation &amp; Formula Key</p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[P1]</sup></span> Fuel/Energy price — user-set or national average. Sources: <a href="https://www.abs.gov.au" target="_blank">ABS</a>, <a href="https://www.energy.gov.au" target="_blank">DISER</a>, <a href="https://www.aemo.com.au" target="_blank">AEMO</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[P1]</sup></span> Fuel/Energy price — user-set or national average. '
+    'Sources: <a href="https://www.abs.gov.au" target="_blank">ABS</a>, '
+    '<a href="https://www.energy.gov.au" target="_blank">DISER</a>, '
+    '<a href="https://www.aemo.com.au" target="_blank">AEMO</a></p>'
     '<p class="cite-row"><span class="cite-key"><sup>[C1]</sup></span> Current Monthly Cost = (Annual km &divide; 100) &times; ICE L/100km &times; Fuel Price &divide; 12</p>'
     '<p class="cite-row"><span class="cite-key"><sup>[C2]</sup></span> Annual Distance = Daily Commute &times; Days/week &times; 52 weeks</p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[C3]</sup></span> Average Small SUV &amp; Hatchback — Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[C4]</sup></span> Average Sedan &amp; Ute (Diesel) — Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[C3]</sup></span> Average Small SUV: 7.5 L/100km — <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[C4]</sup></span> Average Hatchback: 6.2, Sedan: 6.8, Ute Diesel: 9.5 L/100km — <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
     '<p class="cite-row"><span class="cite-key"><sup>[S1]</sup></span> BYD Monthly Cost = (Annual km &divide; 100) &times; BYD Consumption &times; Energy Price &divide; 12</p>'
     '<p class="cite-row"><span class="cite-key"><sup>[S2]</sup></span> Monthly Saving = ICE Monthly <sup>[C1]</sup> &minus; BYD Monthly <sup>[S1]</sup></p>'
     '<p class="cite-row"><span class="cite-key"><sup>[V1]</sup></span> % Value = (ICE Annual &minus; BYD Annual) &divide; ICE Annual &times; 100</p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[D1]&ndash;[D4]</sup></span> BYD model consumption figures — Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+    + ev_cite_rows +
     '</div>'
-    '<p style="font-size:0.75rem;color:#999;margin:12px 0 0;">Default values should be reviewed periodically as fuel and electricity prices change.</p>'
+    '<p style="font-size:0.75rem;color:#999;margin:12px 0 0;">'
+    'BYD model consumption data sourced directly from greenvehicleguide.gov.au. '
+    'Default values should be reviewed periodically as fuel and electricity prices change.</p>'
     '</div>'
 )
 st.markdown(assumptions_html, unsafe_allow_html=True)
@@ -490,17 +486,17 @@ print_html = (
     '<table>'
     '<tr><th>Ref</th><th>Parameter</th><th>Value</th><th>Source</th></tr>'
     '<tr><td>[P1]</td><td>Fuel Price</td><td>$' + f"{fuel_price:.2f}" + ' AUD/Litre</td><td>ABS / DISER</td></tr>'
-    '<tr><td>[C1]</td><td>ICE Segment</td><td>' + selected_ice_name + ': ' + str(ice_l100) + ' L/100km</td><td>Green Vehicle Guide</td></tr>'
+    '<tr><td>[' + ice_cite + ']</td><td>ICE Segment</td><td>' + selected_ice_name + ': ' + str(ice_l100) + ' L/100km</td><td>Green Vehicle Guide</td></tr>'
     '<tr><td>[C2]</td><td>Annual Distance</td><td>' + f"{ann_km:,.0f}" + ' km</td><td>User input</td></tr>'
-    '<tr><td>[S1]</td><td>BYD Model</td><td>BYD ' + selected_byd_name + ': ' + str(byd_val) + ' ' + byd_unit + '</td><td>Green Vehicle Guide</td></tr>'
+    '<tr><td>[' + byd_cite + ']</td><td>BYD Model</td><td>BYD ' + selected_byd_name + ': ' + str(byd_val) + ' ' + byd_unit + '</td><td>Green Vehicle Guide</td></tr>'
     '<tr><td>[V1]</td><td>% Saving</td><td>' + f"{pct_saving:.1f}" + '% cheaper than ICE</td><td>Calculated</td></tr>'
     '</table>'
     '<div class="print-disclaimer">'
     '<strong>General Estimate Only.</strong> This calculator provides indicative figures and does not '
     'constitute financial advice. Results are based on user-provided inputs and national averages. '
     'Individual results will vary. Not a substitute for professional financial or automotive advice. '
-    'ICE segment averages and BYD model consumption figures sourced from the Green Vehicle Guide. '
-    'Fuel price default sourced from ABS/DISER. Electricity price default sourced from AEMO.'
+    'BYD model consumption data sourced from greenvehicleguide.gov.au. '
+    'Fuel price default: ABS/DISER. Electricity price default: AEMO.'
     '</div>'
     '<p style="font-size:8pt;color:#aaa;margin-top:16px;">General estimates only. Not financial advice. '
     'Data sources: ABS, DISER, AEMO, Green Vehicle Guide.</p>'
