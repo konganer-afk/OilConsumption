@@ -9,15 +9,12 @@ SVG_CAR  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="
 SVG_BOLT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a7fa3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>'
 
 # ── Data ───────────────────────────────────────────────────────────────────────
-# [I1]-[I4] = ICE segment data. Source: Green Vehicle Guide national averages.
 ICE_SEGMENTS = {
     "Average Small SUV":    {"l100": 7.5, "cite": "I1"},
     "Average Hatchback":    {"l100": 6.2, "cite": "I2"},
     "Average Sedan":        {"l100": 6.8, "cite": "I3"},
     "Average Ute (Diesel)": {"l100": 9.5, "cite": "I4"},
 }
-
-# [D1]-[D6] EV: GVG EnergyConsumptionWhkm / 10 = kWh/100km
 BYD_EV_MODELS = {
     "Dolphin":   {"val": 12.6, "unit": "kWh/100km", "cite": "D1"},
     "Seal":      {"val": 13.8, "unit": "kWh/100km", "cite": "D2"},
@@ -26,8 +23,6 @@ BYD_EV_MODELS = {
     "Atto 2":    {"val": 17.0, "unit": "kWh/100km", "cite": "D5"},
     "Sealion 7": {"val": 17.9, "unit": "kWh/100km", "cite": "D6"},
 }
-
-# [D1]-[D4] PHEV: GVG FuelConsumptionCombined L/100km
 BYD_PHEV_MODELS = {
     "Sealion 6": {"val": 1.1, "unit": "L/100km", "cite": "D1"},
     "Sealion 8": {"val": 1.1, "unit": "L/100km", "cite": "D2"},
@@ -88,8 +83,12 @@ st.markdown("""
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
     background:linear-gradient(135deg,#0a2a5e 0%,#0d3d7a 100%)!important; border-color:#0a2a5e!important;
 }
+/* FIX: all text white on selected card including bold name */
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p,
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span { color:white!important; }
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span,
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) strong {
+    color:white!important;
+}
 [data-testid="stMain"] div[role="radiogroup"] > label > div:first-child { display:none!important; }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p {
     margin:0 0 2px!important; line-height:1.25!important;
@@ -119,7 +118,7 @@ st.markdown("""
 
 .segment-header { font-size:0.68rem; font-weight:700; letter-spacing:3px; color:#888; text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:4px; }
 
-/* Metric cards — no badges */
+/* Metric cards */
 .metric-card { background:#f8fafc; border:1px solid #e0eaf3; border-radius:10px; padding:14px 16px; margin-bottom:10px; }
 .metric-card-green { background:#e6f4ea; border:1px solid #b7dfbf; border-radius:10px; padding:14px 16px; margin-bottom:10px; }
 .metric-label { font-size:0.82rem; color:#666; margin:0 0 4px; }
@@ -227,6 +226,15 @@ if mode == "ICE to EV":
         "(e.g. small hatch vs. small hatch). Mixing segments will produce misleading results."
     )
 
+# UPDATED disclaimer with new sentence
+disclaimer_text = (
+    '<strong>General Estimate Only.</strong> This calculator provides indicative figures and does not '
+    'constitute financial advice. Results are based on user-provided inputs and national averages. '
+    'Individual results will vary. Individual results may still vary based on driving habits. '
+    'Not a substitute for professional financial or automotive advice.'
+    + segment_note_html
+)
+
 hero_html = (
     '<div class="flashy-result">'
       '<p class="flash_label">Estimated Annual Savings</p>'
@@ -238,12 +246,7 @@ hero_html = (
           '<span class="flash_unit">AUD per Year</span>'
         '</div>'
       '</div>'
-      '<div class="flash_disclaimer">'
-        '<strong>General Estimate Only.</strong> This calculator provides indicative figures and does not '
-        'constitute financial advice. Results are based on user-provided inputs and national averages. '
-        'Individual results will vary. Not a substitute for professional financial or automotive advice.'
-        + segment_note_html +
-      '</div>'
+      '<div class="flash_disclaimer">' + disclaimer_text + '</div>'
     '</div>'
 )
 st.markdown(hero_html, unsafe_allow_html=True)
@@ -292,7 +295,6 @@ def generate_pdf():
     pdf.add_page()
     pdf.set_margins(20, 20, 20)
 
-    # Header bar
     pdf.set_fill_color(26, 127, 163)
     pdf.rect(0, 0, 210, 28, 'F')
     pdf.set_text_color(255, 255, 255)
@@ -363,11 +365,11 @@ def generate_pdf():
     pdf.ln()
     pdf.set_font("Helvetica", "", 8)
     assumption_rows = [
-        ("[P1]",             "Fuel Price",          "$" + f"{fuel_price:.2f}" + " AUD/L",     "ABS / DISER"),
+        ("[P1]",               "Fuel Price",        "$" + f"{fuel_price:.2f}" + " AUD/L",                    "ABS / DISER"),
         ("[" + ice_cite + "]", "ICE Segment",       selected_ice_name[:25] + ": " + str(ice_l100) + " L/100km", "Green Vehicle Guide"),
-        ("[C2]",             "Annual Distance",      f"{ann_km:,.0f} km",                      "User input"),
-        ("[" + byd_cite + "]", "BYD " + selected_byd_name, str(byd_val) + " " + byd_unit,    "Green Vehicle Guide"),
-        ("[V1]",             "% Saving",             f"{pct_saving:.1f}% cheaper",             "Calculated"),
+        ("[C2]",               "Annual Distance",    f"{ann_km:,.0f} km",                                     "User input"),
+        ("[" + byd_cite + "]", "BYD " + selected_byd_name, str(byd_val) + " " + byd_unit,                   "Green Vehicle Guide"),
+        ("[V1]",               "% Saving",          f"{pct_saving:.1f}% cheaper",                            "Calculated"),
     ]
     if mode == "ICE to EV":
         assumption_rows.insert(3, ("[P2]", "Electricity Price", "$" + f"{elec_price:.2f}" + " AUD/kWh", "AEMO"))
@@ -400,16 +402,16 @@ def generate_pdf():
         pdf.cell(0, 5, line, ln=True)
     pdf.ln(4)
 
-    # Disclaimer
+    # UPDATED disclaimer with new sentence
     pdf.set_fill_color(240, 247, 255)
     pdf.set_font("Helvetica", "B", 8)
     pdf.multi_cell(
         0, 5,
         "GENERAL ESTIMATE ONLY. This calculator provides indicative figures and does not constitute "
         "financial advice. Results are based on user-provided inputs and national averages. Individual "
-        "results will vary. Not a substitute for professional financial or automotive advice. BYD model "
-        "consumption data sourced from greenvehicleguide.gov.au. Fuel price default: ABS/DISER. "
-        "Electricity price default: AEMO.",
+        "results will vary. Individual results may still vary based on driving habits. Not a substitute "
+        "for professional financial or automotive advice. BYD model consumption data sourced from "
+        "greenvehicleguide.gov.au. Fuel price default: ABS/DISER. Electricity price default: AEMO.",
         border=1, fill=True
     )
     pdf.ln(2)
