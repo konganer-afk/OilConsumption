@@ -2,32 +2,39 @@ import streamlit as st
 import pandas as pd
 from fpdf import FPDF
 
-st.set_page_config(page_title="Dual Mode Savings", page_icon="⛽", layout="wide")
+st.set_page_config(page_title="BYD Savings Calculator", page_icon="⛽", layout="wide")
 
 # ── SVG Icons ──────────────────────────────────────────────────────────────────
 SVG_CAR  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a7fa3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M5 17H3a2 2 0 0 1-2-2v-4l2.38-4.76A2 2 0 0 1 5.17 5h13.66a2 2 0 0 1 1.79 1.1L23 11v4a2 2 0 0 1-2 2h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>'
 SVG_BOLT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a7fa3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>'
 
 # ── Data ───────────────────────────────────────────────────────────────────────
+# ICE segments — all caps display names, alphabetical order
 ICE_SEGMENTS = {
-    "Average Small SUV":    {"l100": 7.5, "cite": "I1"},
-    "Average Hatchback":    {"l100": 6.2, "cite": "I2"},
-    "Average Sedan":        {"l100": 6.8, "cite": "I3"},
-    "Average Ute (Diesel)": {"l100": 9.5, "cite": "I4"},
+    "AVERAGE HATCHBACK":    {"l100": 6.2, "cite": "I1"},
+    "AVERAGE SEDAN":        {"l100": 6.8, "cite": "I2"},
+    "AVERAGE SMALL SUV":    {"l100": 7.5, "cite": "I3"},
+    "AVERAGE UTE (DIESEL)": {"l100": 9.5, "cite": "I4"},
 }
+
+# BYD EV models — "BYD " prefix, all caps, alphabetical order
+# kWh/100km from GVG EnergyConsumptionWhkm / 10
 BYD_EV_MODELS = {
-    "Dolphin":   {"val": 12.6, "unit": "kWh/100km", "cite": "D1"},
-    "Seal":      {"val": 13.8, "unit": "kWh/100km", "cite": "D2"},
-    "Atto 3":    {"val": 14.8, "unit": "kWh/100km", "cite": "D3"},
-    "Atto 1":    {"val": 15.5, "unit": "kWh/100km", "cite": "D4"},
-    "Atto 2":    {"val": 17.0, "unit": "kWh/100km", "cite": "D5"},
-    "Sealion 7": {"val": 17.9, "unit": "kWh/100km", "cite": "D6"},
+    "BYD ATTO 1":    {"val": 15.5, "unit": "kWh/100km", "cite": "D1"},
+    "BYD ATTO 2":    {"val": 17.0, "unit": "kWh/100km", "cite": "D2"},
+    "BYD ATTO 3":    {"val": 14.8, "unit": "kWh/100km", "cite": "D3"},
+    "BYD DOLPHIN":   {"val": 12.6, "unit": "kWh/100km", "cite": "D4"},
+    "BYD SEAL":      {"val": 13.8, "unit": "kWh/100km", "cite": "D5"},
+    "BYD SEALION 7": {"val": 17.9, "unit": "kWh/100km", "cite": "D6"},
 }
+
+# BYD PHEV models — "BYD " prefix, all caps, alphabetical order
+# L/100km from GVG FuelConsumptionCombined
 BYD_PHEV_MODELS = {
-    "Sealion 6": {"val": 1.1, "unit": "L/100km", "cite": "D1"},
-    "Sealion 8": {"val": 1.1, "unit": "L/100km", "cite": "D2"},
-    "Sealion 5": {"val": 1.2, "unit": "L/100km", "cite": "D3"},
-    "Shark 6":   {"val": 2.0, "unit": "L/100km", "cite": "D4"},
+    "BYD SEALION 5": {"val": 1.2, "unit": "L/100km", "cite": "D1"},
+    "BYD SEALION 6": {"val": 1.1, "unit": "L/100km", "cite": "D2"},
+    "BYD SEALION 8": {"val": 1.1, "unit": "L/100km", "cite": "D3"},
+    "BYD SHARK 6":   {"val": 2.0, "unit": "L/100km", "cite": "D4"},
 }
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
@@ -58,8 +65,8 @@ st.markdown("""
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label p {
     font-size:0.78rem!important; font-weight:600!important; margin:0!important;
     text-align:center!important; white-space:nowrap!important;
-    overflow:hidden!important; text-overflow:ellipsis!important; line-height:1!important;
-    color:#1a1a2e!important;
+    overflow:hidden!important; text-overflow:ellipsis!important;
+    line-height:1!important; color:#1a1a2e!important;
 }
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
     border-color:#29B5E8!important;
@@ -128,7 +135,7 @@ st.markdown("""
 
 .segment-header { font-size:0.68rem; font-weight:700; letter-spacing:3px; color:#888; text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:4px; }
 
-/* Metric cards — light */
+/* Metric cards */
 .metric-card { background:#f8fafc; border:1px solid #e0eaf3; border-radius:10px; padding:14px 16px; margin-bottom:10px; }
 .metric-card-green { background:#e6f4ea; border:1px solid #b7dfbf; border-radius:10px; padding:14px 16px; margin-bottom:10px; }
 .metric-label { font-size:0.82rem; color:#666; margin:0 0 4px; }
@@ -139,7 +146,7 @@ st.markdown("""
 .metric-delta { font-size:0.82rem; color:#c0392b; margin:2px 0 0; font-weight:600; }
 .cite-tag { font-size:0.6rem; color:#1a7fa3; font-weight:700; vertical-align:super; margin-left:2px; }
 
-/* Assumptions — light */
+/* Assumptions */
 .assumptions-section { background:#f8fafc; border:1px solid #e0eaf3; border-radius:10px; padding:24px 28px; margin-top:2rem; }
 .assumptions-title { font-size:0.72rem; font-weight:700; color:#1a7fa3; text-transform:uppercase; letter-spacing:2px; margin:0 0 10px; }
 .assumptions-desc { font-size:0.82rem; color:#555; margin:0 0 16px; line-height:1.6; }
@@ -147,16 +154,11 @@ st.markdown("""
 .cite-legend-title { font-size:0.68rem; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:2px; margin:0 0 8px; }
 .cite-row { font-size:0.78rem; color:#555; margin:4px 0; line-height:1.5; }
 .cite-key { font-weight:700; color:#1a7fa3; min-width:40px; display:inline-block; }
-
-/* Table cells — light */
-.assumptions-section table td, .assumptions-section table th {
-    color:#1a1a2e!important;
-}
+.assumptions-section table td, .assumptions-section table th { color:#1a1a2e!important; }
 
 /* ── DARK MODE OVERRIDES ──────────────────────────────────────────────────── */
 [data-theme="dark"] .sidebar-title { color:#29B5E8; }
 
-/* Sidebar radio — dark */
 [data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
     background:#1e2d45!important; border-color:#2d4060!important;
 }
@@ -174,7 +176,6 @@ st.markdown("""
     color:white!important;
 }
 
-/* Main vehicle cards — dark */
 [data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
     background:#1e2d45!important; border-color:#2d4060!important;
 }
@@ -197,10 +198,7 @@ st.markdown("""
     color:white!important;
 }
 
-/* Segment header — dark */
 [data-theme="dark"] .segment-header { color:#8da4c0; }
-
-/* Metric cards — dark */
 [data-theme="dark"] .metric-card { background:#1e2d45; border-color:#2d4060; }
 [data-theme="dark"] .metric-card-green { background:#1a3028; border-color:#2d5040; }
 [data-theme="dark"] .metric-label { color:#8da4c0; }
@@ -210,10 +208,7 @@ st.markdown("""
 [data-theme="dark"] .metric-sub-green { color:#4ade80; }
 [data-theme="dark"] .metric-delta { color:#f87171; }
 
-/* Assumptions — dark */
-[data-theme="dark"] .assumptions-section {
-    background:#1a2535; border-color:#2d4060;
-}
+[data-theme="dark"] .assumptions-section { background:#1a2535; border-color:#2d4060; }
 [data-theme="dark"] .assumptions-title { color:#29B5E8; }
 [data-theme="dark"] .assumptions-desc { color:#a0b4c8; }
 [data-theme="dark"] .cite-legend { border-top-color:#2d4060; }
@@ -221,27 +216,20 @@ st.markdown("""
 [data-theme="dark"] .cite-row { color:#a0b4c8; }
 [data-theme="dark"] .cite-key { color:#29B5E8; }
 
-/* Table — dark */
-[data-theme="dark"] .assumptions-section table thead tr {
-    background:#1e3050!important;
-}
-[data-theme="dark"] .assumptions-section table th {
-    color:#c8daf0!important; border-color:#2d4060!important;
-}
-[data-theme="dark"] .assumptions-section table td {
-    color:#c8daf0!important; border-color:#2d4060!important;
-    background:#1a2535!important;
-}
-[data-theme="dark"] .assumptions-section table tr:nth-child(even) td {
-    background:#1e2d45!important;
-}
+[data-theme="dark"] .assumptions-section table thead tr { background:#1e3050!important; }
+[data-theme="dark"] .assumptions-section table th { color:#c8daf0!important; border-color:#2d4060!important; }
+[data-theme="dark"] .assumptions-section table td { color:#c8daf0!important; border-color:#2d4060!important; background:#1a2535!important; }
+[data-theme="dark"] .assumptions-section table tr:nth-child(even) td { background:#1e2d45!important; }
 
 </style>
 """, unsafe_allow_html=True)
 
 # ── Sidebar ────────────────────────────────────────────────────────────────────
-st.sidebar.markdown('<p class="sidebar-title">DUAL MODE<br>FUEL SAVINGS</p>', unsafe_allow_html=True)
-mode = st.sidebar.radio("Comparison Mode", ["ICE to PHEV", "ICE to EV"], horizontal=True)
+# CHANGE 1: Title updated to "BYD SAVINGS CALCULATOR"
+st.sidebar.markdown('<p class="sidebar-title">BYD SAVINGS<br>CALCULATOR</p>', unsafe_allow_html=True)
+
+# CHANGE 2: ICE to EV is now default (index=0, left), ICE to PHEV on right
+mode = st.sidebar.radio("Comparison Mode", ["ICE to EV", "ICE to PHEV"], horizontal=True)
 st.sidebar.divider()
 st.sidebar.markdown("**Controls**")
 
@@ -315,7 +303,7 @@ new_ann    = (ann_km / 100) * byd_val * (fuel_price if mode == "ICE to PHEV" els
 savings    = curr_ann - new_ann
 pct_saving = (savings / curr_ann * 100) if curr_ann > 0 else 0
 ann_dist_display = (f"{ann_miles:,.0f}" + " mi.") if unit == "mi." else (f"{ann_km:,.0f}" + " km.")
-new_label  = "BYD " + selected_byd_name
+new_label  = selected_byd_name
 
 # ── Hero ───────────────────────────────────────────────────────────────────────
 segment_note_html = ""
@@ -398,7 +386,7 @@ def generate_pdf():
     pdf.set_text_color(255, 255, 255)
     pdf.set_font("Helvetica", "B", 16)
     pdf.set_y(8)
-    pdf.cell(0, 10, "Dual Mode Fuel Savings - Summary Report", ln=True, align="C")
+    pdf.cell(0, 10, "BYD Savings Calculator - Summary Report", ln=True, align="C")
     pdf.set_font("Helvetica", "", 9)
     pdf.cell(0, 6, "Comparison Mode: " + mode, ln=True, align="C")
     pdf.ln(10)
@@ -415,10 +403,10 @@ def generate_pdf():
     col_w = [85, 95]
     rows_sel = [
         ("Current ICE Segment [" + ice_cite + "]", selected_ice_name + " - " + str(ice_l100) + " L/100km"),
-        ("Target BYD Model [" + byd_cite + "]", "BYD " + selected_byd_name + " - " + str(byd_val) + " " + byd_unit),
-        ("Annual Distance [C2]", f"{ann_km:,.0f} km / {ann_miles:,.0f} mi."),
-        ("Days Driven per Week", str(days_per_week)),
-        ("Fuel Price [P1]", "$" + f"{fuel_price:.2f}" + " AUD/Litre"),
+        ("Target BYD Model [" + byd_cite + "]",    selected_byd_name + " - " + str(byd_val) + " " + byd_unit),
+        ("Annual Distance [C2]",                   f"{ann_km:,.0f} km / {ann_miles:,.0f} mi."),
+        ("Days Driven per Week",                   str(days_per_week)),
+        ("Fuel Price [P1]",                        "$" + f"{fuel_price:.2f}" + " AUD/Litre"),
     ]
     if mode == "ICE to EV":
         rows_sel.append(("Electricity Price [P2]", "$" + f"{elec_price:.2f}" + " AUD/kWh"))
@@ -439,11 +427,11 @@ def generate_pdf():
     pdf.ln()
     pdf.set_font("Helvetica", "", 9)
     rows_res = [
-        ("Current ICE Annual Cost",              "$" + f"{curr_ann:,.2f}" + " AUD",   "[C1]"),
-        ("BYD " + selected_byd_name + " Annual", "$" + f"{new_ann:,.2f}" + " AUD",    "[S1]"),
-        ("Estimated Annual Savings",             "$" + f"{savings:,.2f}" + " AUD",    "[P1]"),
-        ("Monthly Saving",                       "$" + f"{savings/12:,.2f}" + "/mo",  "[S2]"),
-        ("Cost Reduction",                       f"{pct_saving:.1f}% cheaper",        "[V1]"),
+        ("Current ICE Annual Cost",          "$" + f"{curr_ann:,.2f}" + " AUD",  "[C1]"),
+        (selected_byd_name + " Annual",      "$" + f"{new_ann:,.2f}" + " AUD",   "[S1]"),
+        ("Estimated Annual Savings",         "$" + f"{savings:,.2f}" + " AUD",   "[P1]"),
+        ("Monthly Saving",                   "$" + f"{savings/12:,.2f}" + "/mo", "[S2]"),
+        ("Cost Reduction",                   f"{pct_saving:.1f}% cheaper",       "[V1]"),
     ]
     for label, value, ref in rows_res:
         pdf.cell(col_w3[0], 7, label, border=1)
@@ -460,11 +448,11 @@ def generate_pdf():
     pdf.ln()
     pdf.set_font("Helvetica", "", 8)
     assumption_rows = [
-        ("[P1]",               "Fuel Price",        "$" + f"{fuel_price:.2f}" + " AUD/L",                       "ABS / DISER"),
-        ("[" + ice_cite + "]", "ICE Segment",       selected_ice_name[:25] + ": " + str(ice_l100) + " L/100km", "Green Vehicle Guide"),
-        ("[C2]",               "Annual Distance",    f"{ann_km:,.0f} km",                                        "User input"),
-        ("[" + byd_cite + "]", "BYD " + selected_byd_name, str(byd_val) + " " + byd_unit,                      "Green Vehicle Guide"),
-        ("[V1]",               "% Saving",          f"{pct_saving:.1f}% cheaper",                               "Calculated"),
+        ("[P1]",               "Fuel Price",       "$" + f"{fuel_price:.2f}" + " AUD/L",                        "ABS / DISER"),
+        ("[" + ice_cite + "]", "ICE Segment",      selected_ice_name[:25] + ": " + str(ice_l100) + " L/100km",  "Green Vehicle Guide"),
+        ("[C2]",               "Annual Distance",   f"{ann_km:,.0f} km",                                         "User input"),
+        ("[" + byd_cite + "]", selected_byd_name,  str(byd_val) + " " + byd_unit,                               "Green Vehicle Guide"),
+        ("[V1]",               "% Saving",         f"{pct_saving:.1f}% cheaper",                                "Calculated"),
     ]
     if mode == "ICE to EV":
         assumption_rows.insert(3, ("[P2]", "Electricity Price", "$" + f"{elec_price:.2f}" + " AUD/kWh", "AEMO"))
@@ -483,15 +471,15 @@ def generate_pdf():
         "[S1] BYD Monthly Cost = (Annual km / 100) x BYD Consumption x Energy Price / 12",
         "[S2] Monthly Saving = ICE Monthly [C1] - BYD Monthly [S1]",
         "[V1] % Value = (ICE Annual - BYD Annual) / ICE Annual x 100",
-        "[I1] Avg Small SUV: 7.5  [I2] Avg Hatchback: 6.2  [I3] Avg Sedan: 6.8  [I4] Avg Ute Diesel: 9.5 L/100km - Green Vehicle Guide",
+        "[I1]-[I4] ICE segment averages - Green Vehicle Guide",
     ]
     if mode == "ICE to EV":
         cite_lines.insert(1, "[P2] Electricity price - user-set or AEMO national average.")
         for i, (k, v) in enumerate(BYD_EV_MODELS.items(), 1):
-            cite_lines.append("[D" + str(i) + "] BYD " + k + ": " + str(v["val"]) + " kWh/100km - Green Vehicle Guide")
+            cite_lines.append("[D" + str(i) + "] " + k + ": " + str(v["val"]) + " kWh/100km - Green Vehicle Guide")
     else:
         for i, (k, v) in enumerate(BYD_PHEV_MODELS.items(), 1):
-            cite_lines.append("[D" + str(i) + "] BYD " + k + ": " + str(v["val"]) + " L/100km - Green Vehicle Guide")
+            cite_lines.append("[D" + str(i) + "] " + k + ": " + str(v["val"]) + " L/100km - Green Vehicle Guide")
     for line in cite_lines:
         pdf.cell(0, 5, line, ln=True)
     pdf.ln(4)
@@ -519,7 +507,7 @@ pdf_bytes = generate_pdf()
 st.download_button(
     label="Download as PDF",
     data=pdf_bytes,
-    file_name="DualMode_Savings_Summary.pdf",
+    file_name="BYD_Savings_Summary.pdf",
     mime="application/pdf"
 )
 
@@ -528,7 +516,7 @@ if mode == "ICE to PHEV":
     mode_rows = (
         '<tr>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Consumption <sup>[' + byd_cite + ']</sup></td>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">BYD ' + selected_byd_name + ': <strong>' + str(byd_val) + ' L/100km</strong></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">' + selected_byd_name + ': <strong>' + str(byd_val) + ' L/100km</strong></td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
         '</tr>'
     )
@@ -536,7 +524,7 @@ else:
     mode_rows = (
         '<tr>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;">EV Consumption <sup>[' + byd_cite + ']</sup></td>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">BYD ' + selected_byd_name + ': <strong>' + str(byd_val) + ' kWh/100km</strong></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">' + selected_byd_name + ': <strong>' + str(byd_val) + ' kWh/100km</strong></td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
         '</tr>'
         '<tr>'
@@ -551,14 +539,14 @@ if mode == "ICE to EV":
     for i, (k, v) in enumerate(BYD_EV_MODELS.items(), 1):
         d_cite_rows += (
             '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
-            'BYD ' + k + ' &mdash; ' + str(v["val"]) + ' kWh/100km. '
+            + k + ' &mdash; ' + str(v["val"]) + ' kWh/100km. '
             'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
         )
 else:
     for i, (k, v) in enumerate(BYD_PHEV_MODELS.items(), 1):
         d_cite_rows += (
             '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
-            'BYD ' + k + ' &mdash; ' + str(v["val"]) + ' L/100km. '
+            + k + ' &mdash; ' + str(v["val"]) + ' L/100km. '
             'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
         )
 
@@ -615,10 +603,10 @@ assumptions_html = (
     '<p class="cite-row"><span class="cite-key"><sup>[S1]</sup></span> BYD Monthly Cost = (Annual km &divide; 100) &times; BYD Consumption &times; Energy Price &divide; 12</p>'
     '<p class="cite-row"><span class="cite-key"><sup>[S2]</sup></span> Monthly Saving = ICE Monthly <sup>[C1]</sup> &minus; BYD Monthly <sup>[S1]</sup></p>'
     '<p class="cite-row"><span class="cite-key"><sup>[V1]</sup></span> % Value = (ICE Annual &minus; BYD Annual) &divide; ICE Annual &times; 100</p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[I1]</sup></span> Average Small SUV: 7.5 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[I2]</sup></span> Average Hatchback: 6.2 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[I3]</sup></span> Average Sedan: 6.8 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[I4]</sup></span> Average Ute (Diesel): 9.5 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[I1]</sup></span> AVERAGE HATCHBACK: 6.2 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[I2]</sup></span> AVERAGE SEDAN: 6.8 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[I3]</sup></span> AVERAGE SMALL SUV: 7.5 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[I4]</sup></span> AVERAGE UTE (DIESEL): 9.5 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
     + d_cite_rows +
     '</div>'
     '<p style="font-size:0.75rem;color:#999;margin:12px 0 0;">'
