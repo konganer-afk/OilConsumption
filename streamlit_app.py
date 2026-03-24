@@ -33,6 +33,8 @@ BYD_PHEV_MODELS = {
 # ── CSS ────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
+
+/* ── LIGHT MODE BASE ─────────────────────────────────────────────────────── */
 .block-container { padding-top:3.5rem; padding-bottom:1rem; }
 .sidebar-title {
     font-size:2.8rem!important; font-weight:900; line-height:1.0;
@@ -40,7 +42,7 @@ st.markdown("""
     text-transform:uppercase; letter-spacing:-1px;
 }
 
-/* Sidebar radio: small, centered, single line */
+/* Sidebar radio */
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] {
     display:grid!important; grid-template-columns:1fr 1fr!important; gap:8px!important;
 }
@@ -51,18 +53,24 @@ st.markdown("""
     box-sizing:border-box!important; display:flex!important;
     flex-direction:row!important; justify-content:center!important;
     align-items:center!important; white-space:nowrap!important;
-    overflow:hidden!important; transition:border-color 0.15s!important; width:100%!important;
+    overflow:hidden!important; transition:all 0.15s!important; width:100%!important;
 }
-[data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover { border-color:#29B5E8!important; }
-[data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
-    background:linear-gradient(135deg,#0a2a5e 0%,#0d3d7a 100%)!important; border-color:#0a2a5e!important;
-}
-[data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p,
-[data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span { color:white!important; }
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label p {
     font-size:0.78rem!important; font-weight:600!important; margin:0!important;
     text-align:center!important; white-space:nowrap!important;
     overflow:hidden!important; text-overflow:ellipsis!important; line-height:1!important;
+    color:#1a1a2e!important;
+}
+[data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
+    border-color:#29B5E8!important;
+}
+[data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
+    background:linear-gradient(135deg,#0a2a5e 0%,#0d3d7a 100%)!important;
+    border-color:#0a2a5e!important;
+}
+[data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p,
+[data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span {
+    color:white!important;
 }
 [data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-child { display:none!important; }
 
@@ -77,13 +85,15 @@ st.markdown("""
     box-sizing:border-box!important; display:flex!important;
     flex-direction:column!important; justify-content:center!important;
     align-items:flex-start!important; overflow:hidden!important;
-    transition:border-color 0.15s!important; width:100%!important;
+    transition:all 0.15s!important; width:100%!important;
 }
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover { border-color:#29B5E8!important; }
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
+    border-color:#29B5E8!important;
+}
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
-    background:linear-gradient(135deg,#0a2a5e 0%,#0d3d7a 100%)!important; border-color:#0a2a5e!important;
+    background:linear-gradient(135deg,#0a2a5e 0%,#0d3d7a 100%)!important;
+    border-color:#0a2a5e!important;
 }
-/* FIX: all text white on selected card including bold name */
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p,
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span,
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) strong {
@@ -98,7 +108,7 @@ st.markdown("""
     font-size:0.88rem!important; font-weight:700!important; color:#1a1a2e!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:last-child {
-    font-size:0.72rem!important; color:#888!important;
+    font-size:0.72rem!important; color:#666!important;
 }
 
 /* Hero */
@@ -118,7 +128,7 @@ st.markdown("""
 
 .segment-header { font-size:0.68rem; font-weight:700; letter-spacing:3px; color:#888; text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:4px; }
 
-/* Metric cards */
+/* Metric cards — light */
 .metric-card { background:#f8fafc; border:1px solid #e0eaf3; border-radius:10px; padding:14px 16px; margin-bottom:10px; }
 .metric-card-green { background:#e6f4ea; border:1px solid #b7dfbf; border-radius:10px; padding:14px 16px; margin-bottom:10px; }
 .metric-label { font-size:0.82rem; color:#666; margin:0 0 4px; }
@@ -129,7 +139,7 @@ st.markdown("""
 .metric-delta { font-size:0.82rem; color:#c0392b; margin:2px 0 0; font-weight:600; }
 .cite-tag { font-size:0.6rem; color:#1a7fa3; font-weight:700; vertical-align:super; margin-left:2px; }
 
-/* Assumptions */
+/* Assumptions — light */
 .assumptions-section { background:#f8fafc; border:1px solid #e0eaf3; border-radius:10px; padding:24px 28px; margin-top:2rem; }
 .assumptions-title { font-size:0.72rem; font-weight:700; color:#1a7fa3; text-transform:uppercase; letter-spacing:2px; margin:0 0 10px; }
 .assumptions-desc { font-size:0.82rem; color:#555; margin:0 0 16px; line-height:1.6; }
@@ -137,6 +147,95 @@ st.markdown("""
 .cite-legend-title { font-size:0.68rem; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:2px; margin:0 0 8px; }
 .cite-row { font-size:0.78rem; color:#555; margin:4px 0; line-height:1.5; }
 .cite-key { font-weight:700; color:#1a7fa3; min-width:40px; display:inline-block; }
+
+/* Table cells — light */
+.assumptions-section table td, .assumptions-section table th {
+    color:#1a1a2e!important;
+}
+
+/* ── DARK MODE OVERRIDES ──────────────────────────────────────────────────── */
+[data-theme="dark"] .sidebar-title { color:#29B5E8; }
+
+/* Sidebar radio — dark */
+[data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
+    background:#1e2d45!important; border-color:#2d4060!important;
+}
+[data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label p {
+    color:#c8daf0!important;
+}
+[data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
+    border-color:#29B5E8!important;
+}
+[data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
+    background:linear-gradient(135deg,#0a2a5e 0%,#1a4a8a 100%)!important;
+    border-color:#29B5E8!important;
+}
+[data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p {
+    color:white!important;
+}
+
+/* Main vehicle cards — dark */
+[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
+    background:#1e2d45!important; border-color:#2d4060!important;
+}
+[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:first-child {
+    color:#e2e8f0!important;
+}
+[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:last-child {
+    color:#8da4c0!important;
+}
+[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
+    border-color:#29B5E8!important;
+}
+[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
+    background:linear-gradient(135deg,#0a2a5e 0%,#1a4a8a 100%)!important;
+    border-color:#29B5E8!important;
+}
+[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p,
+[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span,
+[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) strong {
+    color:white!important;
+}
+
+/* Segment header — dark */
+[data-theme="dark"] .segment-header { color:#8da4c0; }
+
+/* Metric cards — dark */
+[data-theme="dark"] .metric-card { background:#1e2d45; border-color:#2d4060; }
+[data-theme="dark"] .metric-card-green { background:#1a3028; border-color:#2d5040; }
+[data-theme="dark"] .metric-label { color:#8da4c0; }
+[data-theme="dark"] .metric-value { color:#e2e8f0; }
+[data-theme="dark"] .metric-value-green { color:#4ade80; }
+[data-theme="dark"] .metric-sub { color:#6b849e; }
+[data-theme="dark"] .metric-sub-green { color:#4ade80; }
+[data-theme="dark"] .metric-delta { color:#f87171; }
+
+/* Assumptions — dark */
+[data-theme="dark"] .assumptions-section {
+    background:#1a2535; border-color:#2d4060;
+}
+[data-theme="dark"] .assumptions-title { color:#29B5E8; }
+[data-theme="dark"] .assumptions-desc { color:#a0b4c8; }
+[data-theme="dark"] .cite-legend { border-top-color:#2d4060; }
+[data-theme="dark"] .cite-legend-title { color:#6b849e; }
+[data-theme="dark"] .cite-row { color:#a0b4c8; }
+[data-theme="dark"] .cite-key { color:#29B5E8; }
+
+/* Table — dark */
+[data-theme="dark"] .assumptions-section table thead tr {
+    background:#1e3050!important;
+}
+[data-theme="dark"] .assumptions-section table th {
+    color:#c8daf0!important; border-color:#2d4060!important;
+}
+[data-theme="dark"] .assumptions-section table td {
+    color:#c8daf0!important; border-color:#2d4060!important;
+    background:#1a2535!important;
+}
+[data-theme="dark"] .assumptions-section table tr:nth-child(even) td {
+    background:#1e2d45!important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
@@ -226,7 +325,6 @@ if mode == "ICE to EV":
         "(e.g. small hatch vs. small hatch). Mixing segments will produce misleading results."
     )
 
-# UPDATED disclaimer with new sentence
 disclaimer_text = (
     '<strong>General Estimate Only.</strong> This calculator provides indicative figures and does not '
     'constitute financial advice. Results are based on user-provided inputs and national averages. '
@@ -312,7 +410,6 @@ def generate_pdf():
         pdf.cell(0, 8, title, ln=True)
         pdf.set_text_color(30, 30, 30)
 
-    # Your Selection
     section_title("Your Selection")
     pdf.set_font("Helvetica", "", 9)
     col_w = [85, 95]
@@ -332,7 +429,6 @@ def generate_pdf():
         pdf.cell(col_w[1], 7, value, border=1, fill=True, ln=True)
     pdf.ln(4)
 
-    # Results
     section_title("Results")
     pdf.set_font("Helvetica", "", 9)
     col_w3 = [80, 75, 25]
@@ -355,7 +451,6 @@ def generate_pdf():
         pdf.cell(col_w3[2], 7, ref, border=1, ln=True)
     pdf.ln(4)
 
-    # Assumptions
     section_title("Assumptions & Data Sources")
     col_w4 = [18, 58, 62, 42]
     pdf.set_fill_color(224, 234, 251)
@@ -365,11 +460,11 @@ def generate_pdf():
     pdf.ln()
     pdf.set_font("Helvetica", "", 8)
     assumption_rows = [
-        ("[P1]",               "Fuel Price",        "$" + f"{fuel_price:.2f}" + " AUD/L",                    "ABS / DISER"),
+        ("[P1]",               "Fuel Price",        "$" + f"{fuel_price:.2f}" + " AUD/L",                       "ABS / DISER"),
         ("[" + ice_cite + "]", "ICE Segment",       selected_ice_name[:25] + ": " + str(ice_l100) + " L/100km", "Green Vehicle Guide"),
-        ("[C2]",               "Annual Distance",    f"{ann_km:,.0f} km",                                     "User input"),
-        ("[" + byd_cite + "]", "BYD " + selected_byd_name, str(byd_val) + " " + byd_unit,                   "Green Vehicle Guide"),
-        ("[V1]",               "% Saving",          f"{pct_saving:.1f}% cheaper",                            "Calculated"),
+        ("[C2]",               "Annual Distance",    f"{ann_km:,.0f} km",                                        "User input"),
+        ("[" + byd_cite + "]", "BYD " + selected_byd_name, str(byd_val) + " " + byd_unit,                      "Green Vehicle Guide"),
+        ("[V1]",               "% Saving",          f"{pct_saving:.1f}% cheaper",                               "Calculated"),
     ]
     if mode == "ICE to EV":
         assumption_rows.insert(3, ("[P2]", "Electricity Price", "$" + f"{elec_price:.2f}" + " AUD/kWh", "AEMO"))
@@ -379,7 +474,6 @@ def generate_pdf():
         pdf.ln()
     pdf.ln(4)
 
-    # Citation key
     section_title("Citation & Formula Key")
     pdf.set_font("Helvetica", "", 8)
     cite_lines = [
@@ -402,7 +496,6 @@ def generate_pdf():
         pdf.cell(0, 5, line, ln=True)
     pdf.ln(4)
 
-    # UPDATED disclaimer with new sentence
     pdf.set_fill_color(240, 247, 255)
     pdf.set_font("Helvetica", "B", 8)
     pdf.multi_cell(
