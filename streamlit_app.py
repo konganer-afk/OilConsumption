@@ -43,16 +43,68 @@ BYD_PHEV_MODELS = {
 # ── CSS ────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
 
 /* ── LIGHT MODE BASE ─────────────────────────────────────────────────────── */
-.block-container { padding-top:3.5rem; padding-bottom:1rem; }
+html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
+.block-container { padding-top:3rem; padding-bottom:1rem; }
+
+/* Subtle page tint */
+.stApp { background:linear-gradient(160deg,#f2f6fc 0%,#edf1f8 100%)!important; }
+[data-testid="stSidebar"] > div:first-child { background:linear-gradient(180deg,#f7f9fc 0%,#f0f4fa 100%)!important; }
+
 .sidebar-title {
     font-size:2.8rem!important; font-weight:900; line-height:1.0;
-    margin-bottom:1.2rem; color:#1a7fa3;
+    margin-bottom:1.2rem;
+    background:linear-gradient(135deg,#0d2b6b 0%,#1460a0 50%,#29B5E8 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+    background-clip:text;
     text-transform:uppercase; letter-spacing:-1px;
 }
 
-/* Sidebar radio */
+/* Sidebar "Comparison Mode" label */
+[data-testid="stSidebar"] p:has(+ div [data-testid="stHorizontalBlock"]) {
+    font-size:0.7rem!important; font-weight:700!important; letter-spacing:2px!important;
+    text-transform:uppercase!important; color:#8899aa!important; margin-bottom:6px!important;
+}
+
+/* Sidebar control labels with icons */
+.ctrl-label {
+    font-size:0.78rem!important; font-weight:600!important;
+    color:#556!important; display:flex!important; align-items:center!important;
+    gap:7px!important; margin:12px 0 3px!important; padding:0!important; line-height:1.4!important;
+    letter-spacing:0.2px!important;
+}
+.ctrl-label svg { flex-shrink:0; color:#1a7fa3; }
+
+/* Controls section header */
+[data-testid="stSidebar"] strong { font-size:0.68rem!important; font-weight:800!important;
+    text-transform:uppercase!important; letter-spacing:3px!important; color:#aab!important; }
+
+/* Comparison mode toggle buttons */
+[data-testid="stSidebar"] button[kind="primary"] {
+    background:linear-gradient(135deg,#0a2a5e 0%,#0d3d7a 100%)!important;
+    border:1.5px solid #0a2a5e!important; color:white!important;
+    border-radius:10px!important; font-weight:700!important; font-size:0.78rem!important;
+    height:40px!important; min-height:40px!important; padding:8px 4px!important;
+    box-shadow:0 4px 12px rgba(10,42,94,0.35)!important;
+    transition:all 0.15s!important;
+}
+[data-testid="stSidebar"] button[kind="secondary"] {
+    background:white!important; border:1.5px solid #dce8f5!important;
+    border-radius:10px!important; font-weight:600!important; font-size:0.78rem!important;
+    color:#1a1a2e!important; height:40px!important; min-height:40px!important; padding:8px 4px!important;
+    box-shadow:0 1px 4px rgba(0,0,0,0.06)!important; transition:all 0.15s!important;
+}
+[data-testid="stSidebar"] button[kind="secondary"]:hover {
+    border-color:#29B5E8!important; box-shadow:0 2px 8px rgba(41,181,232,0.2)!important;
+}
+[data-testid="stSidebar"] button[kind="primary"] span[data-testid="stIconMaterial"],
+[data-testid="stSidebar"] button[kind="primary"] p { color:white!important; }
+[data-testid="stSidebar"] button[kind="secondary"] span[data-testid="stIconMaterial"],
+[data-testid="stSidebar"] button[kind="secondary"] p { color:#1a1a2e!important; }
+
+/* Sidebar radio (km/mi) */
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] {
     display:grid!important; grid-template-columns:1fr 1fr!important; gap:8px!important;
 }
@@ -64,6 +116,7 @@ st.markdown("""
     flex-direction:row!important; justify-content:center!important;
     align-items:center!important; white-space:nowrap!important;
     overflow:hidden!important; transition:all 0.15s!important; width:100%!important;
+    box-shadow:0 1px 3px rgba(0,0,0,0.05)!important;
 }
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label p {
     font-size:0.78rem!important; font-weight:600!important; margin:0!important;
@@ -71,9 +124,12 @@ st.markdown("""
     overflow:hidden!important; text-overflow:ellipsis!important;
     line-height:1!important; color:#1a1a2e!important;
 }
-[data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover { border-color:#29B5E8!important; }
+[data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
+    border-color:#29B5E8!important; box-shadow:0 2px 8px rgba(41,181,232,0.15)!important;
+}
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
-    background:linear-gradient(135deg,#0a2a5e 0%,#0d3d7a 100%)!important; border-color:#0a2a5e!important;
+    background:linear-gradient(135deg,#0a2a5e 0%,#0d3d7a 100%)!important;
+    border-color:#0a2a5e!important; box-shadow:0 4px 12px rgba(10,42,94,0.3)!important;
 }
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p,
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span { color:white!important; }
@@ -84,17 +140,25 @@ st.markdown("""
     display:grid!important; grid-template-columns:1fr 1fr!important; gap:10px!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
-    background:white!important; border:1.5px solid #dce8f5!important;
-    border-radius:12px!important; padding:14px 16px!important;
+    background:white!important; border:1.5px solid #e2eaf4!important;
+    border-radius:14px!important; padding:14px 16px!important;
     cursor:pointer!important; min-height:78px!important; height:78px!important;
     box-sizing:border-box!important; display:flex!important;
     flex-direction:column!important; justify-content:center!important;
     align-items:flex-start!important; overflow:hidden!important;
-    transition:all 0.15s!important; width:100%!important;
+    transition:all 0.18s ease!important; width:100%!important;
+    box-shadow:0 2px 8px rgba(0,0,0,0.05)!important;
 }
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover { border-color:#29B5E8!important; }
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
+    border-color:#29B5E8!important;
+    box-shadow:0 6px 20px rgba(41,181,232,0.2)!important;
+    transform:translateY(-2px)!important;
+}
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
-    background:linear-gradient(135deg,#0a2a5e 0%,#0d3d7a 100%)!important; border-color:#0a2a5e!important;
+    background:linear-gradient(135deg,#0a2a5e 0%,#0e4080 100%)!important;
+    border-color:#1a5fa0!important;
+    box-shadow:0 8px 24px rgba(10,42,94,0.4)!important;
+    transform:translateY(-1px)!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p,
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span,
@@ -108,118 +172,204 @@ st.markdown("""
     font-size:0.88rem!important; font-weight:700!important; color:#1a1a2e!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:last-child {
-    font-size:0.72rem!important; color:#666!important;
+    font-size:0.72rem!important; color:#7788aa!important;
 }
 
 /* Hero */
 .flashy-result {
-    background:linear-gradient(135deg,#29B5E8 0%,#1a7fa3 100%);
-    color:white; padding:40px 48px; border-radius:18px;
-    box-shadow:0 20px 40px rgba(0,0,0,0.2); margin-bottom:32px;
-    border:2px solid rgba(255,255,255,0.2);
+    background:linear-gradient(135deg,#0d2b6b 0%,#1460a0 45%,#1a9fc8 100%);
+    color:white; padding:40px 48px; border-radius:22px;
+    box-shadow:0 24px 56px rgba(10,42,94,0.35), 0 0 0 1px rgba(255,255,255,0.08) inset;
+    margin-bottom:32px; border:none;
 }
-.flash_label { font-size:0.9rem; text-transform:uppercase; letter-spacing:6px; opacity:0.85; margin:0 0 10px; text-align:center; }
+.flash_label { font-size:0.8rem; text-transform:uppercase; letter-spacing:8px; opacity:0.7;
+    margin:0 0 10px; text-align:center; font-weight:600; }
 .flash_number_row { display:flex; align-items:center; justify-content:center; gap:16px; margin:0 0 8px; }
-.flash_val { font-size:16rem; font-weight:900; line-height:1; text-shadow:4px 4px 20px rgba(0,0,0,0.25); margin:0; }
-.flash_cite { font-size:1.1rem; font-weight:700; opacity:0.8; align-self:flex-start; margin-top:24px; }
+.flash_val { font-size:17.25rem; font-weight:900; line-height:1;
+    text-shadow:0 4px 32px rgba(0,0,0,0.3); margin:0; letter-spacing:-4px; }
+.flash_cite { font-size:1.1rem; font-weight:700; opacity:0.7; align-self:flex-start; margin-top:24px; }
 .flash_side { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; }
-.flash_unit { font-size:0.75rem; font-weight:600; letter-spacing:2px; opacity:0.85; text-transform:uppercase; }
-.flash_disclaimer { background:rgba(255,255,255,0.12); border-radius:10px; padding:14px 20px; margin-top:20px; font-size:0.78rem; line-height:1.6; }
+.flash_unit { font-size:0.72rem; font-weight:700; letter-spacing:3px; opacity:0.75; text-transform:uppercase; }
+.flash_disclaimer { background:rgba(0,0,0,0.18); border-radius:12px; padding:14px 20px;
+    margin-top:20px; font-size:0.59rem; line-height:1.7; border:1px solid rgba(255,255,255,0.08); }
 
-.segment-header { font-size:0.68rem; font-weight:700; letter-spacing:3px; color:#888; text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:4px; }
+.segment-header { font-size:0.66rem; font-weight:800; letter-spacing:3px; color:#99aabb;
+    text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:6px; }
 
 /* Metric cards */
-.metric-card { background:#f8fafc; border:1px solid #e0eaf3; border-radius:10px; padding:14px 16px; margin-bottom:10px; }
-.metric-card-green { background:#e6f4ea; border:1px solid #b7dfbf; border-radius:10px; padding:14px 16px; margin-bottom:10px; }
-.metric-label { font-size:0.82rem; color:#666; margin:0 0 4px; }
-.metric-value { font-size:1.8rem; font-weight:700; color:#1a1a2e; margin:0; }
-.metric-value-green { font-size:1.8rem; font-weight:700; color:#137333; margin:0; }
-.metric-sub { font-size:0.72rem; color:#999; margin:3px 0 0; }
-.metric-sub-green { font-size:0.72rem; color:#137333; margin:3px 0 0; }
-.metric-delta { font-size:0.82rem; color:#c0392b; margin:2px 0 0; font-weight:600; }
+.metric-card {
+    background:white; border:1px solid #e2eaf4; border-left:4px solid #29B5E8;
+    border-radius:12px; padding:14px 16px; margin-bottom:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+.metric-card-green {
+    background:white; border:1px solid #b7dfbf; border-left:4px solid #22c55e;
+    border-radius:12px; padding:14px 16px; margin-bottom:10px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04);
+}
+.metric-label { font-size:0.78rem; color:#778899; margin:0 0 4px; font-weight:500; letter-spacing:0.2px; }
+.metric-value { font-size:1.8rem; font-weight:800; color:#1a1a2e; margin:0; letter-spacing:-1px; }
+.metric-value-green { font-size:1.8rem; font-weight:800; color:#137333; margin:0; letter-spacing:-1px; }
+.metric-sub { font-size:0.71rem; color:#aab; margin:3px 0 0; }
+.metric-sub-green { font-size:0.71rem; color:#22a355; margin:3px 0 0; }
+.metric-delta { font-size:0.82rem; color:#e05050; margin:2px 0 0; font-weight:700; }
 .cite-tag { font-size:0.6rem; color:#1a7fa3; font-weight:700; vertical-align:super; margin-left:2px; }
 
 /* Assumptions */
-.assumptions-section { background:#f8fafc; border:1px solid #e0eaf3; border-radius:10px; padding:24px 28px; margin-top:2rem; }
-.assumptions-title { font-size:0.72rem; font-weight:700; color:#1a7fa3; text-transform:uppercase; letter-spacing:2px; margin:0 0 10px; }
-.assumptions-desc { font-size:0.82rem; color:#555; margin:0 0 16px; line-height:1.6; }
-.cite-legend { margin-top:16px; padding-top:14px; border-top:1px solid #e0eaf3; }
-.cite-legend-title { font-size:0.68rem; font-weight:700; color:#888; text-transform:uppercase; letter-spacing:2px; margin:0 0 8px; }
-.cite-row { font-size:0.78rem; color:#555; margin:4px 0; line-height:1.5; }
+.assumptions-section {
+    background:white; border:1px solid #e2eaf4; border-radius:14px;
+    padding:24px 28px; margin-top:2rem; box-shadow:0 2px 12px rgba(0,0,0,0.04);
+}
+.assumptions-title { font-size:0.68rem; font-weight:800; color:#1a7fa3;
+    text-transform:uppercase; letter-spacing:3px; margin:0 0 10px; }
+.assumptions-desc { font-size:0.82rem; color:#667; margin:0 0 16px; line-height:1.7; }
+.cite-legend { margin-top:16px; padding-top:14px; border-top:1px solid #e8eff8; }
+.cite-legend-title { font-size:0.66rem; font-weight:800; color:#aab; text-transform:uppercase; letter-spacing:3px; margin:0 0 8px; }
+.cite-row { font-size:0.78rem; color:#556; margin:4px 0; line-height:1.5; }
 .cite-key { font-weight:700; color:#1a7fa3; min-width:40px; display:inline-block; }
 .assumptions-section table td, .assumptions-section table th { color:#1a1a2e!important; }
 
+/* Download PDF button */
+[data-testid="stDownloadButton"] button {
+    background:linear-gradient(135deg,#0a2a5e 0%,#1460a0 100%)!important;
+    color:white!important; border:none!important; border-radius:12px!important;
+    padding:10px 28px!important; font-weight:700!important; font-size:0.88rem!important;
+    letter-spacing:0.5px!important; box-shadow:0 4px 16px rgba(10,42,94,0.3)!important;
+    transition:all 0.18s ease!important;
+}
+[data-testid="stDownloadButton"] button:hover {
+    box-shadow:0 6px 22px rgba(10,42,94,0.45)!important; transform:translateY(-1px)!important;
+}
+[data-theme="dark"] [data-testid="stDownloadButton"] button {
+    background:linear-gradient(135deg,#0d3060 0%,#1a5a9a 100%)!important;
+    box-shadow:0 4px 16px rgba(41,181,232,0.2)!important;
+}
+
 /* ── DARK MODE OVERRIDES ──────────────────────────────────────────────────── */
-[data-theme="dark"] .sidebar-title { color:#29B5E8; }
+[data-theme="dark"] .stApp { background:linear-gradient(160deg,#0d1421 0%,#111827 100%)!important; }
+[data-theme="dark"] [data-testid="stSidebar"] > div:first-child { background:linear-gradient(180deg,#131c2e 0%,#0f1826 100%)!important; }
+[data-theme="dark"] .sidebar-title {
+    background:linear-gradient(135deg,#29B5E8 0%,#5dd5f8 100%);
+    -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+}
+[data-theme="dark"] .ctrl-label { color:#c8daf0!important; }
+[data-theme="dark"] .ctrl-label svg { color:#29B5E8; }
+[data-theme="dark"] [data-testid="stSidebar"] strong { color:#445!important; }
+
+[data-theme="dark"] [data-testid="stSidebar"] button[kind="primary"] {
+    background:linear-gradient(135deg,#0a2a5e 0%,#1a4a8a 100%)!important;
+    border-color:#29B5E8!important; box-shadow:0 4px 16px rgba(41,181,232,0.25)!important;
+}
+[data-theme="dark"] [data-testid="stSidebar"] button[kind="secondary"] {
+    background:#1a2740!important; border-color:#2d4060!important; box-shadow:none!important;
+}
+[data-theme="dark"] [data-testid="stSidebar"] button[kind="secondary"] span[data-testid="stIconMaterial"],
+[data-theme="dark"] [data-testid="stSidebar"] button[kind="secondary"] p { color:#c8daf0!important; }
+[data-theme="dark"] [data-testid="stSidebar"] button[kind="secondary"]:hover { border-color:#29B5E8!important; }
 
 [data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
-    background:#1e2d45!important; border-color:#2d4060!important;
+    background:#1a2740!important; border-color:#2d4060!important; box-shadow:none!important;
 }
 [data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label p { color:#c8daf0!important; }
 [data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover { border-color:#29B5E8!important; }
 [data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
-    background:linear-gradient(135deg,#0a2a5e 0%,#1a4a8a 100%)!important; border-color:#29B5E8!important;
+    background:linear-gradient(135deg,#0a2a5e 0%,#1a4a8a 100%)!important;
+    border-color:#29B5E8!important; box-shadow:0 4px 14px rgba(41,181,232,0.2)!important;
 }
 [data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p { color:white!important; }
 
 [data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
-    background:#1e2d45!important; border-color:#2d4060!important;
+    background:#1a2740!important; border-color:#2a3d58!important; box-shadow:none!important;
+}
+[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
+    border-color:#29B5E8!important; box-shadow:0 6px 20px rgba(41,181,232,0.15)!important;
 }
 [data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:first-child { color:#e2e8f0!important; }
-[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:last-child { color:#8da4c0!important; }
-[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover { border-color:#29B5E8!important; }
+[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:last-child { color:#6a88a8!important; }
 [data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
-    background:linear-gradient(135deg,#0a2a5e 0%,#1a4a8a 100%)!important; border-color:#29B5E8!important;
+    background:linear-gradient(135deg,#0a2a5e 0%,#1a4a8a 100%)!important;
+    border-color:#29B5E8!important; box-shadow:0 8px 24px rgba(10,42,94,0.5)!important;
 }
 [data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p,
 [data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span,
 [data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) strong { color:white!important; }
 
-[data-theme="dark"] .segment-header { color:#8da4c0; }
-[data-theme="dark"] .metric-card { background:#1e2d45; border-color:#2d4060; }
-[data-theme="dark"] .metric-card-green { background:#1a3028; border-color:#2d5040; }
-[data-theme="dark"] .metric-label { color:#8da4c0; }
+[data-theme="dark"] .segment-header { color:#506070; }
+[data-theme="dark"] .metric-card { background:#141e30; border-color:#1e2d45; border-left-color:#29B5E8; }
+[data-theme="dark"] .metric-card-green { background:#0f2018; border-color:#1e3a28; border-left-color:#22c55e; }
+[data-theme="dark"] .metric-label { color:#6a88a8; }
 [data-theme="dark"] .metric-value { color:#e2e8f0; }
 [data-theme="dark"] .metric-value-green { color:#4ade80; }
-[data-theme="dark"] .metric-sub { color:#6b849e; }
-[data-theme="dark"] .metric-sub-green { color:#4ade80; }
+[data-theme="dark"] .metric-sub { color:#445566; }
+[data-theme="dark"] .metric-sub-green { color:#3ac870; }
 [data-theme="dark"] .metric-delta { color:#f87171; }
-[data-theme="dark"] .assumptions-section { background:#1a2535; border-color:#2d4060; }
+[data-theme="dark"] .assumptions-section { background:#141e30; border-color:#1e2d45; box-shadow:none; }
 [data-theme="dark"] .assumptions-title { color:#29B5E8; }
-[data-theme="dark"] .assumptions-desc { color:#a0b4c8; }
-[data-theme="dark"] .cite-legend { border-top-color:#2d4060; }
-[data-theme="dark"] .cite-legend-title { color:#6b849e; }
-[data-theme="dark"] .cite-row { color:#a0b4c8; }
+[data-theme="dark"] .assumptions-desc { color:#8aa0bc; }
+[data-theme="dark"] .cite-legend { border-top-color:#1e2d45; }
+[data-theme="dark"] .cite-legend-title { color:#445566; }
+[data-theme="dark"] .cite-row { color:#8aa0bc; }
 [data-theme="dark"] .cite-key { color:#29B5E8; }
-[data-theme="dark"] .assumptions-section table thead tr { background:#1e3050!important; }
-[data-theme="dark"] .assumptions-section table th { color:#c8daf0!important; border-color:#2d4060!important; }
-[data-theme="dark"] .assumptions-section table td { color:#c8daf0!important; border-color:#2d4060!important; background:#1a2535!important; }
-[data-theme="dark"] .assumptions-section table tr:nth-child(even) td { background:#1e2d45!important; }
+[data-theme="dark"] .assumptions-section table thead tr { background:#1a2e50!important; }
+[data-theme="dark"] .assumptions-section table th { color:#c8daf0!important; border-color:#1e2d45!important; }
+[data-theme="dark"] .assumptions-section table td { color:#c8daf0!important; border-color:#1e2d45!important; background:#141e30!important; }
+[data-theme="dark"] .assumptions-section table tr:nth-child(even) td { background:#1a2740!important; }
 
 </style>
 """, unsafe_allow_html=True)
 
 # ── Sidebar ────────────────────────────────────────────────────────────────────
 st.sidebar.markdown('<p class="sidebar-title">BYD SAVINGS<br>CALCULATOR</p>', unsafe_allow_html=True)
-mode = st.sidebar.radio("Comparison Mode", ["ICE to EV", "ICE to PHEV"], horizontal=True)
+if "comp_mode" not in st.session_state:
+    st.session_state.comp_mode = "EV"
+st.sidebar.markdown("Comparison Mode")
+mc1, mc2 = st.sidebar.columns(2)
+with mc1:
+    if st.button("EV", key="ev_btn", icon=":material/electric_bolt:",
+                 use_container_width=True,
+                 type="primary" if st.session_state.comp_mode == "EV" else "secondary"):
+        st.session_state.comp_mode = "EV"
+        st.rerun()
+with mc2:
+    if st.button("PHEV", key="phev_btn", icon=":material/local_gas_station:",
+                 use_container_width=True,
+                 type="primary" if st.session_state.comp_mode == "PHEV" else "secondary"):
+        st.session_state.comp_mode = "PHEV"
+        st.rerun()
+mode = st.session_state.comp_mode
 st.sidebar.divider()
 st.sidebar.markdown("**Controls**")
 
-unit = st.sidebar.radio("Distance Unit", ["km.", "mi."], horizontal=True)
+ICO_RULER   = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="color:inherit"><path d="M21 6.5l-3.5-3.5L3 17l3.5 3.5L21 6.5zm-14 12L4.5 16l9-9L16 9.5l-9 9zM7 16.5l1-1 1 1-1 1-1-1zm2.5-2.5l1-1 1 1-1 1-1-1zm2.5-2.5l1-1 1 1-1 1-1-1zm2.5-2.5l1-1 1 1-1 1-1-1z"/></svg>'
+ICO_CAR     = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="color:inherit"><path d="M18.92 6.01C18.72 5.42 18.16 5 17.5 5h-11c-.66 0-1.21.42-1.42 1.01L3 12v8c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-1h12v1c0 .55.45 1 1 1h1c.55 0 1-.45 1-1v-8l-2.08-5.99zM6.5 16c-.83 0-1.5-.67-1.5-1.5S5.67 13 6.5 13s1.5.67 1.5 1.5S7.33 16 6.5 16zm11 0c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5zM5 11l1.5-4.5h11L19 11H5z"/></svg>'
+ICO_CAL     = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="color:inherit"><path d="M20 3h-1V1h-2v2H7V1H5v2H4c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 18H4V8h16v13z"/></svg>'
+ICO_FUEL    = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="color:inherit"><path d="M19.77 7.23l.01-.01-3.72-3.72L15 4.56l2.11 2.11c-.94.36-1.61 1.26-1.61 2.33 0 1.38 1.12 2.5 2.5 2.5.36 0 .69-.08 1-.21v7.21c0 .55-.45 1-1 1s-1-.45-1-1V14c0-1.1-.9-2-2-2h-1V5c0-1.1-.9-2-2-2H6c-1.1 0-2 .9-2 2v16h10v-7.5h1.5v5c0 1.38 1.12 2.5 2.5 2.5S20 19.88 20 18.5V9c0-.69-.28-1.32-.73-1.77zM12 10H6V5h6v5z"/></svg>'
+ICO_BOLT    = '<svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="color:inherit"><path d="M7 2v11h3v9l7-12h-4l4-8z"/></svg>'
+
+def ctrl_label(icon, text):
+    st.sidebar.markdown(f'<p class="ctrl-label">{icon} {text}</p>', unsafe_allow_html=True)
+
+ctrl_label(ICO_RULER, "Distance Unit")
+unit = st.sidebar.radio("Distance Unit", ["km.", "mi."], horizontal=True, label_visibility="collapsed")
 if unit == "mi.":
-    daily_miles = st.sidebar.slider("Daily Commute (mi.)", 0, 200, 30)
+    ctrl_label(ICO_CAR, "Daily Commute (mi.)")
+    daily_miles = st.sidebar.slider("Daily Commute (mi.)", 0, 200, 30, label_visibility="collapsed")
 else:
-    daily_km_input = st.sidebar.slider("Daily Commute (km.)", 0, 320, 48)
+    ctrl_label(ICO_CAR, "Daily Commute (km.)")
+    daily_km_input = st.sidebar.slider("Daily Commute (km.)", 0, 320, 48, label_visibility="collapsed")
     daily_miles = daily_km_input / 1.60934
 
-days_per_week = st.sidebar.slider("Days Driven per Week", 1, 7, 5)
-fuel_price = st.sidebar.number_input("Fuel Price (AUD/Litre)", value=1.85, step=0.01)
+ctrl_label(ICO_CAL, "Days Driven per Week")
+days_per_week = st.sidebar.slider("Days Driven per Week", 1, 7, 5, label_visibility="collapsed")
+ctrl_label(ICO_FUEL, "Fuel Price (AUD/Litre)")
+fuel_price = st.sidebar.number_input("Fuel Price (AUD/Litre)", value=1.85, step=0.01, label_visibility="collapsed")
 st.sidebar.caption("Default: ABS/DISER national average. Enter your local price for accuracy.")
 
 elec_price = 0.30
-if mode == "ICE to EV":
+if mode == "EV":
     st.sidebar.divider()
-    elec_price = st.sidebar.number_input("Electricity Price (AUD/kWh)", value=0.30, step=0.01)
+    ctrl_label(ICO_BOLT, "Electricity Price (AUD/kWh)")
+    elec_price = st.sidebar.number_input("Electricity Price (AUD/kWh)", value=0.30, step=0.01, label_visibility="collapsed")
     st.sidebar.caption("Default: AEMO national average. Enter your plan's rate for accuracy.")
 
 # ── Card Selectors ─────────────────────────────────────────────────────────────
@@ -241,7 +391,7 @@ with col_ice:
     ice_cite = ice_data["cite"]
 
 with col_byd:
-    if mode == "ICE to PHEV":
+    if mode == "PHEV":
         st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD PHEV Model</p>', unsafe_allow_html=True)
         byd_card_keys = list(BYD_PHEV_MODELS.keys())
         byd_options = [
@@ -273,14 +423,14 @@ byd_cite = byd_data["cite"]
 ann_miles  = daily_miles * days_per_week * 52
 ann_km     = ann_miles * 1.60934
 curr_ann   = (ann_km / 100) * ice_l100 * fuel_price
-new_ann    = (ann_km / 100) * byd_val * (fuel_price if mode == "ICE to PHEV" else elec_price)
+new_ann    = (ann_km / 100) * byd_val * (fuel_price if mode == "PHEV" else elec_price)
 savings    = curr_ann - new_ann
 pct_saving = (savings / curr_ann * 100) if curr_ann > 0 else 0
 ann_dist_display = (f"{ann_miles:,.0f}" + " mi.") if unit == "mi." else (f"{ann_km:,.0f}" + " km.")
 
 # ── Hero ───────────────────────────────────────────────────────────────────────
 segment_note_html = ""
-if mode == "ICE to EV":
+if mode == "EV":
     segment_note_html = (
         "<br><strong>Segment note:</strong> For accurate comparisons, use vehicles of the same segment "
         "(e.g. small hatch vs. small hatch). Mixing segments will produce misleading results."
@@ -298,7 +448,7 @@ hero_html = (
     '<div class="flashy-result">'
       '<p class="flash_label">Estimated Annual Savings</p>'
       '<div class="flash_number_row">'
-        '<h1 class="flash_val">$' + f"{savings:,.2f}" + '</h1>'
+        '<h1 class="flash_val">$' + f"{savings:,.2f}" + '<span style="font-size:1em;font-weight:900;opacity:0.75;margin-left:0.18em;">AUD</span></h1>'
         '<sup class="flash_cite">*[P1]</sup>'
         '<div class="flash_side">'
           '<span class="flash_unit">Indicative Estimate</span>'
@@ -361,7 +511,7 @@ def generate_pdf():
     pdf.set_y(8)
     pdf.cell(0, 10, "BYD Savings Calculator - Summary Report", ln=True, align="C")
     pdf.set_font("Helvetica", "", 9)
-    pdf.cell(0, 6, "Comparison Mode: " + mode, ln=True, align="C")
+    pdf.cell(0, 6, "Comparison Mode: ICE to " + mode, ln=True, align="C")
     pdf.ln(10)
     pdf.set_text_color(30, 30, 30)
 
@@ -381,7 +531,7 @@ def generate_pdf():
         ("Days Driven per Week",                   str(days_per_week)),
         ("Fuel Price [P1]",                        "$" + f"{fuel_price:.2f}" + " AUD/Litre"),
     ]
-    if mode == "ICE to EV":
+    if mode == "EV":
         rows_sel.append(("Electricity Price [P2]", "$" + f"{elec_price:.2f}" + " AUD/kWh"))
     for label, value in rows_sel:
         pdf.set_fill_color(240, 247, 255)
@@ -426,7 +576,7 @@ def generate_pdf():
         ("[" + byd_cite + "]", byd_name,           str(byd_val) + " " + byd_unit,                          "Green Vehicle Guide"),
         ("[V1]",               "% Saving",         f"{pct_saving:.1f}% cheaper",                           "Calculated"),
     ]
-    if mode == "ICE to EV":
+    if mode == "EV":
         assumption_rows.insert(3, ("[P2]", "Electricity Price", "$" + f"{elec_price:.2f}" + " AUD/kWh", "AEMO"))
     for row in assumption_rows:
         for i, cell in enumerate(row):
@@ -445,7 +595,7 @@ def generate_pdf():
         "[V1] % Value = (ICE Annual - BYD Annual) / ICE Annual x 100",
         "[I1]-[I4] ICE segment averages - Green Vehicle Guide",
     ]
-    if mode == "ICE to EV":
+    if mode == "EV":
         cite_lines.insert(1, "[P2] Electricity price - user-set or AEMO national average.")
         for i, (k, v) in enumerate(BYD_EV_MODELS.items(), 1):
             cite_lines.append("[D" + str(i) + "] " + v["name"] + ": " + str(v["val"]) + " kWh/100km - Green Vehicle Guide")
@@ -484,7 +634,7 @@ st.download_button(
 )
 
 # ── Assumptions — title case names ────────────────────────────────────────────
-if mode == "ICE to PHEV":
+if mode == "PHEV":
     mode_rows = (
         '<tr>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Consumption <sup>[' + byd_cite + ']</sup></td>'
@@ -507,7 +657,7 @@ else:
     )
 
 d_cite_rows = ""
-if mode == "ICE to EV":
+if mode == "EV":
     for i, (k, v) in enumerate(BYD_EV_MODELS.items(), 1):
         d_cite_rows += (
             '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
@@ -523,7 +673,7 @@ else:
         )
 
 p2_row = ""
-if mode == "ICE to EV":
+if mode == "EV":
     p2_row = (
         '<p class="cite-row"><span class="cite-key"><sup>[P2]</sup></span> '
         'Electricity price &mdash; user-set or AEMO national average. '
