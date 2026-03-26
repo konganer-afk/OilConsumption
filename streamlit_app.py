@@ -182,16 +182,16 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
     box-shadow:0 24px 56px rgba(10,42,94,0.35), 0 0 0 1px rgba(255,255,255,0.08) inset;
     margin-bottom:32px; border:none;
 }
-.flash_label { font-size:0.8rem; text-transform:uppercase; letter-spacing:8px; opacity:0.7;
+.flash_label { font-size:1.0rem; text-transform:uppercase; letter-spacing:8px; opacity:0.7;
     margin:0 0 10px; text-align:center; font-weight:600; }
 .flash_number_row { display:flex; align-items:center; justify-content:center; gap:16px; margin:0 0 8px; }
-.flash_val { font-size:17.25rem; font-weight:900; line-height:1;
+.flash_val { font-size:19rem; font-weight:900; line-height:1;
     text-shadow:0 4px 32px rgba(0,0,0,0.3); margin:0; letter-spacing:-4px; }
-.flash_cite { font-size:1.1rem; font-weight:700; opacity:0.7; align-self:flex-start; margin-top:24px; }
+.flash_cite { font-size:1.4rem; font-weight:700; opacity:0.7; align-self:flex-start; margin-top:30px; }
 .flash_side { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; }
-.flash_unit { font-size:0.72rem; font-weight:700; letter-spacing:3px; opacity:0.75; text-transform:uppercase; }
+.flash_unit { font-size:0.92rem; font-weight:700; letter-spacing:3px; opacity:0.75; text-transform:uppercase; }
 .flash_disclaimer { background:rgba(0,0,0,0.18); border-radius:12px; padding:14px 20px;
-    margin-top:20px; font-size:0.59rem; line-height:1.7; border:1px solid rgba(255,255,255,0.08); }
+    margin-top:20px; font-size:0.72rem; line-height:1.7; border:1px solid rgba(255,255,255,0.08); }
 
 /* Cost Comparison chart card */
 .stVegaLiteChart {
