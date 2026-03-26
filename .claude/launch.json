@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "Streamlit App",
+      "runtimeExecutable": "streamlit",
+      "runtimeArgs": ["run", "streamlit_app.py", "--server.enableCORS", "false", "--server.enableXsrfProtection", "false", "--server.headless", "true"],
+      "port": 8501
+    }
+  ]
+}
