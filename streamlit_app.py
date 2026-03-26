@@ -142,7 +142,7 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
     background:white!important; border:1.5px solid #e2eaf4!important;
     border-radius:14px!important; padding:14px 16px!important;
-    cursor:pointer!important; min-height:78px!important; height:78px!important;
+    cursor:pointer!important; height:78px!important; min-height:78px!important; max-height:78px!important;
     box-sizing:border-box!important; display:flex!important;
     flex-direction:column!important; justify-content:center!important;
     align-items:flex-start!important; overflow:hidden!important;
@@ -335,7 +335,7 @@ st.sidebar.markdown('<p class="sidebar-title">BYD SAVINGS<br>CALCULATOR</p>', un
 if "comp_mode" not in st.session_state:
     st.session_state.comp_mode = "EV"
 st.sidebar.markdown("Comparison Mode")
-mc1, mc2 = st.sidebar.columns(2)
+_, mc1, mc2, _ = st.sidebar.columns([0.2, 1, 1, 0.2])
 with mc1:
     if st.button("EV", key="ev_btn", icon=":material/electric_bolt:",
                  use_container_width=True,
@@ -385,7 +385,7 @@ if mode == "EV":
     st.sidebar.caption("Default: AEMO national average. Enter your plan's rate for accuracy.")
 
 # ── Card Selectors ─────────────────────────────────────────────────────────────
-col_ice, col_byd = st.columns(2)
+col_ice, col_byd = st.columns(2, gap="medium")
 
 with col_ice:
     st.markdown('<p class="segment-header">' + SVG_CAR + ' Current ICE Segment</p>', unsafe_allow_html=True)
