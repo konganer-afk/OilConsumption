@@ -193,6 +193,18 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 .flash_disclaimer { background:rgba(0,0,0,0.18); border-radius:12px; padding:14px 20px;
     margin-top:20px; font-size:0.59rem; line-height:1.7; border:1px solid rgba(255,255,255,0.08); }
 
+/* Cost Comparison chart card */
+.stVegaLiteChart {
+    background:white!important; border:1px solid #e2eaf4!important;
+    border-left:4px solid #1460a0!important;
+    border-radius:0 14px 14px 0!important; padding:16px 16px 8px!important;
+    box-shadow:0 2px 8px rgba(0,0,0,0.04)!important;
+}
+[data-theme="dark"] .stVegaLiteChart {
+    background:#141e30!important; border-color:#1e2d45!important;
+    border-left-color:#29B5E8!important;
+}
+
 .segment-header { font-size:0.66rem; font-weight:800; letter-spacing:3px; color:#99aabb;
     text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:6px; }
 
