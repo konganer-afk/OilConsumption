@@ -279,6 +279,8 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 }
 
 /* ── DARK MODE OVERRIDES ──────────────────────────────────────────────────── */
+[data-theme="dark"] h1, [data-theme="dark"] h2,
+[data-theme="dark"] h3, [data-theme="dark"] h4 { color:#e2e8f0!important; }
 [data-theme="dark"] .stApp { background:linear-gradient(160deg,#0d1421 0%,#111827 100%)!important; }
 [data-theme="dark"] [data-testid="stSidebar"] > div:first-child { background:linear-gradient(180deg,#131c2e 0%,#0f1826 100%)!important; }
 [data-theme="dark"] .sidebar-title {
