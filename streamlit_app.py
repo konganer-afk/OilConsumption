@@ -51,7 +51,7 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 /* Hide Streamlit chrome */
 #MainMenu, footer { visibility:hidden!important; }
 [data-testid="stHeader"] { height:0!important; }
-.block-container { padding-top:1.5rem!important; padding-bottom:1rem; }
+.block-container { padding-top:3.5rem!important; padding-bottom:1rem; }
 
 /* Subtle page tint */
 .stApp { background:linear-gradient(160deg,#f2f6fc 0%,#edf1f8 100%)!important; }
