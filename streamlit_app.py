@@ -211,6 +211,10 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
     background:#141e30!important; border-color:#1e2d45!important;
     box-shadow:inset 4px 0 0 #29B5E8, 0 2px 8px rgba(0,0,0,0.12)!important;
 }
+/* Fix chart text visibility in dark mode */
+[data-theme="dark"] .stVegaLiteChart svg text { fill:#c8daf0!important; }
+[data-theme="dark"] .stVegaLiteChart svg .role-axis path,
+[data-theme="dark"] .stVegaLiteChart svg .role-axis line { stroke:#2a3d58!important; }
 
 .segment-header { font-size:0.66rem; font-weight:800; letter-spacing:3px; color:#99aabb;
     text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:6px; }
