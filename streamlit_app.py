@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 from fpdf import FPDF
 
 st.set_page_config(page_title="BYD Savings Calculator", page_icon="⛽", layout="wide")
@@ -47,7 +48,10 @@ st.markdown("""
 
 /* ── LIGHT MODE BASE ─────────────────────────────────────────────────────── */
 html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
-.block-container { padding-top:3rem; padding-bottom:1rem; }
+/* Hide Streamlit chrome */
+#MainMenu, footer { visibility:hidden!important; }
+[data-testid="stHeader"] { height:0!important; }
+.block-container { padding-top:1.5rem!important; padding-bottom:1rem; }
 
 /* Subtle page tint */
 .stApp { background:linear-gradient(160deg,#f2f6fc 0%,#edf1f8 100%)!important; }
@@ -142,10 +146,10 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
     background:white!important; border:1.5px solid #e2eaf4!important;
     border-radius:14px!important; padding:14px 16px!important;
-    cursor:pointer!important; min-height:78px!important; height:78px!important;
+    cursor:pointer!important; min-height:78px!important;
     box-sizing:border-box!important; display:flex!important;
     flex-direction:column!important; justify-content:center!important;
-    align-items:flex-start!important; overflow:hidden!important;
+    align-items:flex-start!important;
     transition:all 0.18s ease!important; width:100%!important;
     box-shadow:0 2px 8px rgba(0,0,0,0.05)!important;
 }
@@ -166,7 +170,7 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 [data-testid="stMain"] div[role="radiogroup"] > label > div:first-child { display:none!important; }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p {
     margin:0 0 2px!important; line-height:1.25!important;
-    white-space:nowrap!important; overflow:hidden!important; text-overflow:ellipsis!important;
+    white-space:normal!important; word-break:break-word!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:first-child {
     font-size:0.88rem!important; font-weight:700!important; color:#1a1a2e!important;
@@ -182,43 +186,54 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
     box-shadow:0 24px 56px rgba(10,42,94,0.35), 0 0 0 1px rgba(255,255,255,0.08) inset;
     margin-bottom:32px; border:none;
 }
-.flash_label { font-size:0.8rem; text-transform:uppercase; letter-spacing:8px; opacity:0.7;
+.flash_label { font-size:1.0rem; text-transform:uppercase; letter-spacing:8px; opacity:0.7;
     margin:0 0 10px; text-align:center; font-weight:600; }
 .flash_number_row { display:flex; align-items:center; justify-content:center; gap:16px; margin:0 0 8px; }
-.flash_val { font-size:17.25rem; font-weight:900; line-height:1;
+.flash_val { font-size:clamp(4rem, 14vw, 19rem); font-weight:900; line-height:1;
     text-shadow:0 4px 32px rgba(0,0,0,0.3); margin:0; letter-spacing:-4px; }
-.flash_cite { font-size:1.1rem; font-weight:700; opacity:0.7; align-self:flex-start; margin-top:24px; }
+.flash_cite { font-size:1.4rem; font-weight:700; opacity:0.7; align-self:flex-start; margin-top:30px; }
 .flash_side { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; }
-.flash_unit { font-size:0.72rem; font-weight:700; letter-spacing:3px; opacity:0.75; text-transform:uppercase; }
+.flash_unit { font-size:0.92rem; font-weight:700; letter-spacing:3px; opacity:0.75; text-transform:uppercase; }
 .flash_disclaimer { background:rgba(0,0,0,0.18); border-radius:12px; padding:14px 20px;
-    margin-top:20px; font-size:0.59rem; line-height:1.7; border:1px solid rgba(255,255,255,0.08); }
+    margin-top:20px; font-size:0.72rem; line-height:1.7; border:1px solid rgba(255,255,255,0.08); }
 
 /* Cost Comparison chart card */
 .stVegaLiteChart {
     background:white!important; border:1px solid #e2eaf4!important;
-    border-left:4px solid #1460a0!important;
-    border-radius:0 14px 14px 0!important; padding:16px 16px 8px!important;
-    box-shadow:0 2px 8px rgba(0,0,0,0.04)!important;
+    border-radius:14px!important; padding:16px 16px 8px!important;
+    box-shadow:inset 4px 0 0 #1460a0, 0 2px 8px rgba(0,0,0,0.04)!important;
+    overflow:hidden!important;
 }
 [data-theme="dark"] .stVegaLiteChart {
     background:#141e30!important; border-color:#1e2d45!important;
-    border-left-color:#29B5E8!important;
+    box-shadow:inset 4px 0 0 #29B5E8, 0 2px 8px rgba(0,0,0,0.12)!important;
 }
 
 .segment-header { font-size:0.66rem; font-weight:800; letter-spacing:3px; color:#99aabb;
     text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:6px; }
+
+/* Section divider */
+.section-divider {
+    height:1px; margin:24px 0;
+    background:linear-gradient(90deg,transparent,#dce8f5 30%,#dce8f5 70%,transparent);
+}
+[data-theme="dark"] .section-divider { background:linear-gradient(90deg,transparent,#1e2d45 30%,#1e2d45 70%,transparent); }
 
 /* Metric cards */
 .metric-card {
     background:white; border:1px solid #e2eaf4; border-left:4px solid #29B5E8;
     border-radius:12px; padding:14px 16px; margin-bottom:10px;
     box-shadow:0 2px 8px rgba(0,0,0,0.04);
+    transition:transform 0.18s ease, box-shadow 0.18s ease;
 }
+.metric-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(41,181,232,0.15); }
 .metric-card-green {
     background:white; border:1px solid #b7dfbf; border-left:4px solid #22c55e;
     border-radius:12px; padding:14px 16px; margin-bottom:10px;
     box-shadow:0 2px 8px rgba(0,0,0,0.04);
+    transition:transform 0.18s ease, box-shadow 0.18s ease;
 }
+.metric-card-green:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(34,197,94,0.15); }
 .metric-label { font-size:0.78rem; color:#778899; margin:0 0 4px; font-weight:500; letter-spacing:0.2px; }
 .metric-value { font-size:1.8rem; font-weight:800; color:#1a1a2e; margin:0; letter-spacing:-1px; }
 .metric-value-green { font-size:1.8rem; font-weight:800; color:#137333; margin:0; letter-spacing:-1px; }
@@ -335,7 +350,7 @@ st.sidebar.markdown('<p class="sidebar-title">BYD SAVINGS<br>CALCULATOR</p>', un
 if "comp_mode" not in st.session_state:
     st.session_state.comp_mode = "EV"
 st.sidebar.markdown("Comparison Mode")
-mc1, mc2 = st.sidebar.columns(2)
+_, mc1, mc2, _ = st.sidebar.columns([0.2, 1, 1, 0.2])
 with mc1:
     if st.button("EV", key="ev_btn", icon=":material/electric_bolt:",
                  use_container_width=True,
@@ -470,6 +485,7 @@ hero_html = (
       '<div class="flash_disclaimer">' + disclaimer_text + '</div>'
     '</div>'
 )
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 st.markdown(hero_html, unsafe_allow_html=True)
 
 # ── Chart + Key Metrics — use title case names ─────────────────────────────────
@@ -481,7 +497,30 @@ with col_chart:
         "Vehicle": [ice_name, byd_name],
         "Annual Cost (AUD)": [round(curr_ann, 2), round(new_ann, 2)]
     })
-    st.bar_chart(chart_df, x="Vehicle", y="Annual Cost (AUD)", color="Vehicle")
+    chart = alt.Chart(chart_df).mark_bar(
+        cornerRadiusTopLeft=8, cornerRadiusTopRight=8, size=72
+    ).encode(
+        x=alt.X("Vehicle:N", axis=alt.Axis(
+            labelAngle=0, title=None, labelFontSize=13, labelFont="Inter",
+            labelColor="#445566", tickColor="transparent", domainColor="#e2eaf4"
+        )),
+        y=alt.Y("Annual Cost (AUD):Q", axis=alt.Axis(
+            title="Annual Cost (AUD)", titleFont="Inter", titleFontSize=11,
+            titleColor="#8899aa", labelFont="Inter", labelFontSize=11,
+            labelColor="#8899aa", gridColor="#f0f4fa", tickColor="transparent",
+            domainColor="transparent"
+        )),
+        color=alt.Color("Vehicle:N",
+            scale=alt.Scale(domain=[ice_name, byd_name], range=["#0d3d7a", "#29B5E8"]),
+            legend=alt.Legend(title=None, labelFont="Inter", labelFontSize=12,
+                symbolType="square", symbolSize=120, orient="bottom", columns=2)
+        ),
+        tooltip=[
+            alt.Tooltip("Vehicle:N", title="Vehicle"),
+            alt.Tooltip("Annual Cost (AUD):Q", title="Annual Cost (AUD)", format="$,.2f")
+        ]
+    ).properties(height=300, background="transparent")
+    st.altair_chart(chart, use_container_width=True, theme=None)
 
 with col_stats:
     st.subheader("Key Metrics")
