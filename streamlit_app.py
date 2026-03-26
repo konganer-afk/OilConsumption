@@ -211,10 +211,9 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
     background:#141e30!important; border-color:#1e2d45!important;
     box-shadow:inset 4px 0 0 #29B5E8, 0 2px 8px rgba(0,0,0,0.12)!important;
 }
-/* Fix chart text visibility in dark mode */
-[data-theme="dark"] .stVegaLiteChart svg text { fill:#c8daf0!important; }
-[data-theme="dark"] .stVegaLiteChart svg .role-axis path,
-[data-theme="dark"] .stVegaLiteChart svg .role-axis line { stroke:#2a3d58!important; }
+/* Brighten chart text and grid lines in dark mode */
+[data-theme="dark"] .stVegaLiteChart svg text { fill:#a8c0d8!important; }
+[data-theme="dark"] .stVegaLiteChart svg .role-axis .grid line { stroke:rgba(80,110,150,0.35)!important; }
 
 .segment-header { font-size:0.66rem; font-weight:800; letter-spacing:3px; color:#99aabb;
     text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:6px; }
@@ -504,29 +503,33 @@ with col_chart:
         "Vehicle": [ice_name, byd_name],
         "Annual Cost (AUD)": [round(curr_ann, 2), round(new_ann, 2)]
     })
+    LABEL_CLR = "#7a90a8"
+    GRID_CLR  = "#dce8f5"
     chart = alt.Chart(chart_df).mark_bar(
         cornerRadiusTopLeft=8, cornerRadiusTopRight=8, size=72
     ).encode(
         x=alt.X("Vehicle:N", axis=alt.Axis(
             labelAngle=0, title=None, labelFontSize=13, labelFont="Inter",
-            tickColor="transparent", domainColor="transparent"
+            labelColor=LABEL_CLR, tickColor="transparent", domainColor="transparent"
         )),
         y=alt.Y("Annual Cost (AUD):Q", axis=alt.Axis(
             title="Annual Cost (AUD)", titleFont="Inter", titleFontSize=11,
-            labelFont="Inter", labelFontSize=11,
+            titleColor=LABEL_CLR, labelFont="Inter", labelFontSize=11,
+            labelColor=LABEL_CLR, gridColor=GRID_CLR,
             tickColor="transparent", domainColor="transparent"
         )),
         color=alt.Color("Vehicle:N",
             scale=alt.Scale(domain=[ice_name, byd_name], range=["#0d3d7a", "#29B5E8"]),
             legend=alt.Legend(title=None, labelFont="Inter", labelFontSize=12,
-                symbolType="square", symbolSize=120, orient="bottom", columns=2)
+                labelColor=LABEL_CLR, symbolType="square", symbolSize=120,
+                orient="bottom", columns=2)
         ),
         tooltip=[
             alt.Tooltip("Vehicle:N", title="Vehicle"),
             alt.Tooltip("Annual Cost (AUD):Q", title="Annual Cost (AUD)", format="$,.2f")
         ]
     ).properties(height=300, background="transparent")
-    st.altair_chart(chart, use_container_width=True)
+    st.altair_chart(chart, use_container_width=True, theme=None)
 
 with col_stats:
     st.subheader("Key Metrics")
