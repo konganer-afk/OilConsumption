@@ -208,6 +208,8 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
     background:#141e30!important; border-color:#1e2d45!important;
     box-shadow:inset 4px 0 0 #29B5E8, 0 2px 8px rgba(0,0,0,0.12)!important;
 }
+[data-theme="dark"] .stVegaLiteChart svg,
+[data-theme="dark"] .stVegaLiteChart canvas { background:#141e30!important; }
 
 .segment-header { font-size:0.66rem; font-weight:800; letter-spacing:3px; color:#99aabb;
     text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:6px; }
@@ -502,13 +504,12 @@ with col_chart:
     ).encode(
         x=alt.X("Vehicle:N", axis=alt.Axis(
             labelAngle=0, title=None, labelFontSize=13, labelFont="Inter",
-            labelColor="#445566", tickColor="transparent", domainColor="#e2eaf4"
+            tickColor="transparent", domainColor="transparent"
         )),
         y=alt.Y("Annual Cost (AUD):Q", axis=alt.Axis(
             title="Annual Cost (AUD)", titleFont="Inter", titleFontSize=11,
-            titleColor="#8899aa", labelFont="Inter", labelFontSize=11,
-            labelColor="#8899aa", gridColor="#f0f4fa", tickColor="transparent",
-            domainColor="transparent"
+            labelFont="Inter", labelFontSize=11,
+            tickColor="transparent", domainColor="transparent"
         )),
         color=alt.Color("Vehicle:N",
             scale=alt.Scale(domain=[ice_name, byd_name], range=["#0d3d7a", "#29B5E8"]),
@@ -519,8 +520,8 @@ with col_chart:
             alt.Tooltip("Vehicle:N", title="Vehicle"),
             alt.Tooltip("Annual Cost (AUD):Q", title="Annual Cost (AUD)", format="$,.2f")
         ]
-    ).properties(height=300, background="transparent")
-    st.altair_chart(chart, use_container_width=True, theme=None)
+    ).properties(height=300)
+    st.altair_chart(chart, use_container_width=True)
 
 with col_stats:
     st.subheader("Key Metrics")
