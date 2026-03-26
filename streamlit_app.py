@@ -33,12 +33,12 @@ BYD_EV_MODELS = {
     "BYD SEALION 7": {"name": "BYD Sealion 7", "val": 17.9, "unit": "kWh/100km", "cite": "D6"},
 }
 
-# L/100km from GVG FuelConsumptionCombined
+# L/100km (FuelConsumptionCombined) + Wh/km (EnergyConsumptionWhkm) from GVG
 BYD_PHEV_MODELS = {
-    "BYD SEALION 5": {"name": "BYD Sealion 5", "val": 1.2, "unit": "L/100km", "cite": "D1"},
-    "BYD SEALION 6": {"name": "BYD Sealion 6", "val": 1.1, "unit": "L/100km", "cite": "D2"},
-    "BYD SEALION 8": {"name": "BYD Sealion 8", "val": 1.1, "unit": "L/100km", "cite": "D3"},
-    "BYD SHARK 6":   {"name": "BYD Shark 6",   "val": 2.0, "unit": "L/100km", "cite": "D4"},
+    "BYD SEALION 5": {"name": "BYD Sealion 5", "val": 1.2, "unit": "L/100km", "wh_km": 120, "cite": "D1"},
+    "BYD SEALION 6": {"name": "BYD Sealion 6", "val": 1.1, "unit": "L/100km", "wh_km": 169, "cite": "D2"},
+    "BYD SEALION 8": {"name": "BYD Sealion 8", "val": 1.1, "unit": "L/100km", "wh_km": 150, "cite": "D3"},
+    "BYD SHARK 6":   {"name": "BYD Shark 6",   "val": 2.0, "unit": "L/100km", "wh_km": 212, "cite": "D4"},
 }
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
@@ -414,12 +414,10 @@ ctrl_label(ICO_FUEL, "Fuel Price (AUD/Litre)")
 fuel_price = st.sidebar.number_input("Fuel Price (AUD/Litre)", value=1.85, step=0.01, label_visibility="collapsed")
 st.sidebar.caption("Default: ABS/DISER national average. Enter your local price for accuracy.")
 
-elec_price = 0.30
-if mode == "EV":
-    st.sidebar.divider()
-    ctrl_label(ICO_BOLT, "Electricity Price (AUD/kWh)")
-    elec_price = st.sidebar.number_input("Electricity Price (AUD/kWh)", value=0.30, step=0.01, label_visibility="collapsed")
-    st.sidebar.caption("Default: AEMO national average. Enter your plan's rate for accuracy.")
+st.sidebar.divider()
+ctrl_label(ICO_BOLT, "Electricity Price (AUD/kWh)")
+elec_price = st.sidebar.number_input("Electricity Price (AUD/kWh)", value=0.30, step=0.01, label_visibility="collapsed")
+st.sidebar.caption("Default: AEMO national average. Enter your plan's rate for accuracy.")
 
 # ── Card Selectors ─────────────────────────────────────────────────────────────
 col_ice, col_byd = st.columns(2)
@@ -444,7 +442,7 @@ with col_byd:
         st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD PHEV Model</p>', unsafe_allow_html=True)
         byd_card_keys = list(BYD_PHEV_MODELS.keys())
         byd_options = [
-            "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + "  [" + v["cite"] + "]"
+            "**" + k + "**\n\n" + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km  [" + v["cite"] + "]"
             for k, v in BYD_PHEV_MODELS.items()
         ]
         byd_sel = st.radio("byd_phev", byd_options, index=0, label_visibility="collapsed", key="phev_radio")
@@ -463,16 +461,21 @@ with col_byd:
         selected_byd_card = byd_card_keys[byd_idx]
         byd_data = BYD_EV_MODELS[selected_byd_card]
 
-byd_name = byd_data["name"]           # title case — used everywhere except card
-byd_val  = byd_data["val"]
-byd_unit = byd_data["unit"]
-byd_cite = byd_data["cite"]
+byd_name   = byd_data["name"]           # title case — used everywhere except card
+byd_val    = byd_data["val"]
+byd_unit   = byd_data["unit"]
+byd_cite   = byd_data["cite"]
+byd_wh_km  = byd_data.get("wh_km", 0)  # Wh/km — only present for PHEV models
 
 # ── Calculations ───────────────────────────────────────────────────────────────
 ann_miles  = daily_miles * days_per_week * 52
 ann_km     = ann_miles * 1.60934
 curr_ann   = (ann_km / 100) * ice_l100 * fuel_price
-new_ann    = (ann_km / 100) * byd_val * (fuel_price if mode == "PHEV" else elec_price)
+if mode == "PHEV":
+    # Combined cost: fuel (L/100km) + electricity (Wh/km) per km driven
+    new_ann = ann_km * (byd_val / 100 * fuel_price + byd_wh_km / 1000 * elec_price)
+else:
+    new_ann = (ann_km / 100) * byd_val * elec_price
 savings    = curr_ann - new_ann
 pct_saving = (savings / curr_ann * 100) if curr_ann > 0 else 0
 ann_dist_display = (f"{ann_miles:,.0f}" + " mi.") if unit == "mi." else (f"{ann_km:,.0f}" + " km.")
@@ -559,7 +562,7 @@ with col_stats:
           '<p class="metric-label">' + byd_name + ' Monthly</p>'
           '<p class="metric-value">$' + f"{new_ann/12:,.2f}" + '<sup class="cite-tag">[S1]</sup></p>'
           '<p class="metric-delta">&#8595; &minus;$' + f"{savings/12:,.2f}" + '/mo vs ICE <sup class="cite-tag">[S2]</sup></p>'
-          '<p class="metric-sub">' + str(byd_val) + ' ' + byd_unit + ' <sup>[' + byd_cite + ']</sup></p>'
+          '<p class="metric-sub">' + (str(byd_val) + ' L/100km + ' + str(byd_wh_km) + ' Wh/km' if mode == "PHEV" else str(byd_val) + ' ' + byd_unit) + ' <sup>[' + byd_cite + ']</sup></p>'
         '</div>'
         '<div class="metric-card">'
           '<p class="metric-label">Annual Distance</p>'
@@ -606,9 +609,8 @@ def generate_pdf():
         ("Annual Distance [C2]",                   f"{ann_km:,.0f} km / {ann_miles:,.0f} mi."),
         ("Days Driven per Week",                   str(days_per_week)),
         ("Fuel Price [P1]",                        "$" + f"{fuel_price:.2f}" + " AUD/Litre"),
+        ("Electricity Price [P2]",                 "$" + f"{elec_price:.2f}" + " AUD/kWh"),
     ]
-    if mode == "EV":
-        rows_sel.append(("Electricity Price [P2]", "$" + f"{elec_price:.2f}" + " AUD/kWh"))
     for label, value in rows_sel:
         pdf.set_fill_color(240, 247, 255)
         pdf.cell(col_w[0], 7, label, border=1, fill=True)
@@ -649,11 +651,12 @@ def generate_pdf():
         ("[P1]",               "Fuel Price",       "$" + f"{fuel_price:.2f}" + " AUD/L",                   "ABS / DISER"),
         ("[" + ice_cite + "]", "ICE Segment",      ice_name + ": " + str(ice_l100) + " L/100km",           "Green Vehicle Guide"),
         ("[C2]",               "Annual Distance",   f"{ann_km:,.0f} km",                                    "User input"),
-        ("[" + byd_cite + "]", byd_name,           str(byd_val) + " " + byd_unit,                          "Green Vehicle Guide"),
+        ("[" + byd_cite + "]", byd_name + " Fuel",  str(byd_val) + " L/100km",                              "Green Vehicle Guide"),
         ("[V1]",               "% Saving",         f"{pct_saving:.1f}% cheaper",                           "Calculated"),
+        ("[P2]",               "Electricity Price", "$" + f"{elec_price:.2f}" + " AUD/kWh",                 "AEMO"),
     ]
-    if mode == "EV":
-        assumption_rows.insert(3, ("[P2]", "Electricity Price", "$" + f"{elec_price:.2f}" + " AUD/kWh", "AEMO"))
+    if mode == "PHEV":
+        assumption_rows.insert(4, ("[" + byd_cite + "]", byd_name + " Elec.", str(byd_wh_km) + " Wh/km", "Green Vehicle Guide"))
     for row in assumption_rows:
         for i, cell in enumerate(row):
             pdf.cell(col_w4[i], 6, cell, border=1)
@@ -671,13 +674,14 @@ def generate_pdf():
         "[V1] % Value = (ICE Annual - BYD Annual) / ICE Annual x 100",
         "[I1]-[I4] ICE segment averages - Green Vehicle Guide",
     ]
+    cite_lines.insert(1, "[P2] Electricity price - user-set or AEMO national average.")
     if mode == "EV":
-        cite_lines.insert(1, "[P2] Electricity price - user-set or AEMO national average.")
         for i, (k, v) in enumerate(BYD_EV_MODELS.items(), 1):
             cite_lines.append("[D" + str(i) + "] " + v["name"] + ": " + str(v["val"]) + " kWh/100km - Green Vehicle Guide")
     else:
+        cite_lines.append("[S1] PHEV Cost = km x (L/100km / 100 x Fuel Price + Wh/km / 1000 x Elec. Price)")
         for i, (k, v) in enumerate(BYD_PHEV_MODELS.items(), 1):
-            cite_lines.append("[D" + str(i) + "] " + v["name"] + ": " + str(v["val"]) + " L/100km - Green Vehicle Guide")
+            cite_lines.append("[D" + str(i) + "] " + v["name"] + ": " + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km - Green Vehicle Guide")
     for line in cite_lines:
         pdf.cell(0, 5, line, ln=True)
     pdf.ln(4)
@@ -713,9 +717,19 @@ st.download_button(
 if mode == "PHEV":
     mode_rows = (
         '<tr>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Consumption <sup>[' + byd_cite + ']</sup></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Fuel Consumption <sup>[' + byd_cite + ']</sup></td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;">' + byd_name + ': <strong>' + str(byd_val) + ' L/100km</strong></td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
+        '</tr>'
+        '<tr>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Electricity Consumption <sup>[' + byd_cite + ']</sup></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">' + byd_name + ': <strong>' + str(byd_wh_km) + ' Wh/km</strong></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
+        '</tr>'
+        '<tr>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Electricity Price <sup>[P2]</sup></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><strong>$' + f"{elec_price:.2f}" + ' AUD/kWh</strong> (user-set; default: AEMO national avg.)</td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.aemo.com.au" target="_blank">AEMO</a></td>'
         '</tr>'
     )
 else:
@@ -744,7 +758,7 @@ else:
     for i, (k, v) in enumerate(BYD_PHEV_MODELS.items(), 1):
         d_cite_rows += (
             '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
-            + v["name"] + ' &mdash; ' + str(v["val"]) + ' L/100km. '
+            + v["name"] + ' &mdash; ' + str(v["val"]) + ' L/100km + ' + str(v["wh_km"]) + ' Wh/km. '
             'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
         )
 
