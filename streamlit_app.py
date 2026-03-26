@@ -51,7 +51,7 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 /* Hide Streamlit chrome */
 #MainMenu, footer { visibility:hidden!important; }
 [data-testid="stHeader"] { height:0!important; }
-.block-container { padding-top:1.5rem!important; padding-bottom:1rem; }
+.block-container { padding-top:3.5rem!important; padding-bottom:1rem; }
 
 /* Subtle page tint */
 .stApp { background:linear-gradient(160deg,#f2f6fc 0%,#edf1f8 100%)!important; }
@@ -204,12 +204,16 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
     box-shadow:inset 4px 0 0 #1460a0, 0 2px 8px rgba(0,0,0,0.04)!important;
     overflow:hidden!important;
 }
+/* Make SVG background transparent so the card background shows through */
+.stVegaLiteChart svg { background:transparent!important; }
+.stVegaLiteChart svg rect.background { fill:transparent!important; }
 [data-theme="dark"] .stVegaLiteChart {
     background:#141e30!important; border-color:#1e2d45!important;
     box-shadow:inset 4px 0 0 #29B5E8, 0 2px 8px rgba(0,0,0,0.12)!important;
 }
-[data-theme="dark"] .stVegaLiteChart svg,
-[data-theme="dark"] .stVegaLiteChart canvas { background:#141e30!important; }
+/* Brighten chart text and grid lines in dark mode */
+[data-theme="dark"] .stVegaLiteChart svg text { fill:#a8c0d8!important; }
+[data-theme="dark"] .stVegaLiteChart svg .role-axis .grid line { stroke:rgba(80,110,150,0.35)!important; }
 
 .segment-header { font-size:0.66rem; font-weight:800; letter-spacing:3px; color:#99aabb;
     text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:6px; }
@@ -275,6 +279,21 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 }
 
 /* ── DARK MODE OVERRIDES ──────────────────────────────────────────────────── */
+[data-theme="dark"] h1, [data-theme="dark"] h2,
+[data-theme="dark"] h3, [data-theme="dark"] h4 { color:#e2e8f0!important; }
+
+/* Fix number input boxes in dark mode */
+[data-theme="dark"] [data-testid="stNumberInput"] input {
+    background:#1a2740!important; color:#c8daf0!important;
+    border-color:#2d4060!important;
+}
+[data-theme="dark"] [data-testid="stNumberInput"] button {
+    background:#1a2740!important; color:#c8daf0!important;
+    border-color:#2d4060!important;
+}
+[data-theme="dark"] [data-testid="stNumberInput"] > div {
+    background:#1a2740!important; border-color:#2d4060!important;
+}
 [data-theme="dark"] .stApp { background:linear-gradient(160deg,#0d1421 0%,#111827 100%)!important; }
 [data-theme="dark"] [data-testid="stSidebar"] > div:first-child { background:linear-gradient(180deg,#131c2e 0%,#0f1826 100%)!important; }
 [data-theme="dark"] .sidebar-title {
@@ -323,7 +342,8 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 [data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span,
 [data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) strong { color:white!important; }
 
-[data-theme="dark"] .segment-header { color:#506070; }
+[data-theme="dark"] .segment-header { color:#8aa0bc; }
+[data-theme="dark"] .segment-header svg path { stroke:#8aa0bc; }
 [data-theme="dark"] .metric-card { background:#141e30; border-color:#1e2d45; border-left-color:#29B5E8; }
 [data-theme="dark"] .metric-card-green { background:#0f2018; border-color:#1e3a28; border-left-color:#22c55e; }
 [data-theme="dark"] .metric-label { color:#6a88a8; }
@@ -499,29 +519,33 @@ with col_chart:
         "Vehicle": [ice_name, byd_name],
         "Annual Cost (AUD)": [round(curr_ann, 2), round(new_ann, 2)]
     })
+    LABEL_CLR = "#7a90a8"
+    GRID_CLR  = "#dce8f5"
     chart = alt.Chart(chart_df).mark_bar(
         cornerRadiusTopLeft=8, cornerRadiusTopRight=8, size=72
     ).encode(
         x=alt.X("Vehicle:N", axis=alt.Axis(
             labelAngle=0, title=None, labelFontSize=13, labelFont="Inter",
-            tickColor="transparent", domainColor="transparent"
+            labelColor=LABEL_CLR, tickColor="transparent", domainColor="transparent"
         )),
         y=alt.Y("Annual Cost (AUD):Q", axis=alt.Axis(
             title="Annual Cost (AUD)", titleFont="Inter", titleFontSize=11,
-            labelFont="Inter", labelFontSize=11,
+            titleColor=LABEL_CLR, labelFont="Inter", labelFontSize=11,
+            labelColor=LABEL_CLR, gridColor=GRID_CLR,
             tickColor="transparent", domainColor="transparent"
         )),
         color=alt.Color("Vehicle:N",
             scale=alt.Scale(domain=[ice_name, byd_name], range=["#0d3d7a", "#29B5E8"]),
             legend=alt.Legend(title=None, labelFont="Inter", labelFontSize=12,
-                symbolType="square", symbolSize=120, orient="bottom", columns=2)
+                labelColor=LABEL_CLR, symbolType="square", symbolSize=120,
+                orient="bottom", columns=2)
         ),
         tooltip=[
             alt.Tooltip("Vehicle:N", title="Vehicle"),
             alt.Tooltip("Annual Cost (AUD):Q", title="Annual Cost (AUD)", format="$,.2f")
         ]
-    ).properties(height=300)
-    st.altair_chart(chart, use_container_width=True)
+    ).properties(height=300, background="transparent")
+    st.altair_chart(chart, use_container_width=True, theme=None)
 
 with col_stats:
     st.subheader("Key Metrics")
