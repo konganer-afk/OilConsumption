@@ -142,10 +142,10 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
     background:white!important; border:1.5px solid #e2eaf4!important;
     border-radius:14px!important; padding:14px 16px!important;
-    cursor:pointer!important; height:78px!important; min-height:78px!important; max-height:78px!important;
+    cursor:pointer!important; min-height:78px!important;
     box-sizing:border-box!important; display:flex!important;
     flex-direction:column!important; justify-content:center!important;
-    align-items:flex-start!important; overflow:hidden!important;
+    align-items:flex-start!important;
     transition:all 0.18s ease!important; width:100%!important;
     box-shadow:0 2px 8px rgba(0,0,0,0.05)!important;
 }
@@ -166,7 +166,7 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 [data-testid="stMain"] div[role="radiogroup"] > label > div:first-child { display:none!important; }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p {
     margin:0 0 2px!important; line-height:1.25!important;
-    white-space:nowrap!important; overflow:hidden!important; text-overflow:ellipsis!important;
+    white-space:normal!important; word-break:break-word!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:first-child {
     font-size:0.88rem!important; font-weight:700!important; color:#1a1a2e!important;
@@ -385,7 +385,7 @@ if mode == "EV":
     st.sidebar.caption("Default: AEMO national average. Enter your plan's rate for accuracy.")
 
 # ── Card Selectors ─────────────────────────────────────────────────────────────
-col_ice, col_byd = st.columns(2, gap="medium")
+col_ice, col_byd = st.columns(2)
 
 with col_ice:
     st.markdown('<p class="segment-header">' + SVG_CAR + ' Current ICE Segment</p>', unsafe_allow_html=True)
