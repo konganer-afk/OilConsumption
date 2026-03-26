@@ -204,12 +204,13 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
     box-shadow:inset 4px 0 0 #1460a0, 0 2px 8px rgba(0,0,0,0.04)!important;
     overflow:hidden!important;
 }
+/* Make SVG background transparent so the card background shows through */
+.stVegaLiteChart svg { background:transparent!important; }
+.stVegaLiteChart svg rect.background { fill:transparent!important; }
 [data-theme="dark"] .stVegaLiteChart {
     background:#141e30!important; border-color:#1e2d45!important;
     box-shadow:inset 4px 0 0 #29B5E8, 0 2px 8px rgba(0,0,0,0.12)!important;
 }
-[data-theme="dark"] .stVegaLiteChart svg,
-[data-theme="dark"] .stVegaLiteChart canvas { background:#141e30!important; }
 
 .segment-header { font-size:0.66rem; font-weight:800; letter-spacing:3px; color:#99aabb;
     text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:6px; }
@@ -520,7 +521,7 @@ with col_chart:
             alt.Tooltip("Vehicle:N", title="Vehicle"),
             alt.Tooltip("Annual Cost (AUD):Q", title="Annual Cost (AUD)", format="$,.2f")
         ]
-    ).properties(height=300)
+    ).properties(height=300, background="transparent")
     st.altair_chart(chart, use_container_width=True)
 
 with col_stats:
