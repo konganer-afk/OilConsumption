@@ -342,7 +342,8 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 [data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span,
 [data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) strong { color:white!important; }
 
-[data-theme="dark"] .segment-header { color:#506070; }
+[data-theme="dark"] .segment-header { color:#8aa0bc; }
+[data-theme="dark"] .segment-header svg path { stroke:#8aa0bc; }
 [data-theme="dark"] .metric-card { background:#141e30; border-color:#1e2d45; border-left-color:#29B5E8; }
 [data-theme="dark"] .metric-card-green { background:#0f2018; border-color:#1e3a28; border-left-color:#22c55e; }
 [data-theme="dark"] .metric-label { color:#6a88a8; }
