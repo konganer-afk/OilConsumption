@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import altair as alt
 from fpdf import FPDF
 
 st.set_page_config(page_title="BYD Savings Calculator", page_icon="⛽", layout="wide")
@@ -47,7 +48,10 @@ st.markdown("""
 
 /* ── LIGHT MODE BASE ─────────────────────────────────────────────────────── */
 html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
-.block-container { padding-top:3rem; padding-bottom:1rem; }
+/* Hide Streamlit chrome */
+#MainMenu, footer { visibility:hidden!important; }
+[data-testid="stHeader"] { height:0!important; }
+.block-container { padding-top:1.5rem!important; padding-bottom:1rem; }
 
 /* Subtle page tint */
 .stApp { background:linear-gradient(160deg,#f2f6fc 0%,#edf1f8 100%)!important; }
@@ -185,7 +189,7 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 .flash_label { font-size:1.0rem; text-transform:uppercase; letter-spacing:8px; opacity:0.7;
     margin:0 0 10px; text-align:center; font-weight:600; }
 .flash_number_row { display:flex; align-items:center; justify-content:center; gap:16px; margin:0 0 8px; }
-.flash_val { font-size:19rem; font-weight:900; line-height:1;
+.flash_val { font-size:clamp(4rem, 14vw, 19rem); font-weight:900; line-height:1;
     text-shadow:0 4px 32px rgba(0,0,0,0.3); margin:0; letter-spacing:-4px; }
 .flash_cite { font-size:1.4rem; font-weight:700; opacity:0.7; align-self:flex-start; margin-top:30px; }
 .flash_side { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; }
@@ -208,17 +212,28 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 .segment-header { font-size:0.66rem; font-weight:800; letter-spacing:3px; color:#99aabb;
     text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:6px; }
 
+/* Section divider */
+.section-divider {
+    height:1px; margin:24px 0;
+    background:linear-gradient(90deg,transparent,#dce8f5 30%,#dce8f5 70%,transparent);
+}
+[data-theme="dark"] .section-divider { background:linear-gradient(90deg,transparent,#1e2d45 30%,#1e2d45 70%,transparent); }
+
 /* Metric cards */
 .metric-card {
     background:white; border:1px solid #e2eaf4; border-left:4px solid #29B5E8;
     border-radius:12px; padding:14px 16px; margin-bottom:10px;
     box-shadow:0 2px 8px rgba(0,0,0,0.04);
+    transition:transform 0.18s ease, box-shadow 0.18s ease;
 }
+.metric-card:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(41,181,232,0.15); }
 .metric-card-green {
     background:white; border:1px solid #b7dfbf; border-left:4px solid #22c55e;
     border-radius:12px; padding:14px 16px; margin-bottom:10px;
     box-shadow:0 2px 8px rgba(0,0,0,0.04);
+    transition:transform 0.18s ease, box-shadow 0.18s ease;
 }
+.metric-card-green:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(34,197,94,0.15); }
 .metric-label { font-size:0.78rem; color:#778899; margin:0 0 4px; font-weight:500; letter-spacing:0.2px; }
 .metric-value { font-size:1.8rem; font-weight:800; color:#1a1a2e; margin:0; letter-spacing:-1px; }
 .metric-value-green { font-size:1.8rem; font-weight:800; color:#137333; margin:0; letter-spacing:-1px; }
@@ -470,6 +485,7 @@ hero_html = (
       '<div class="flash_disclaimer">' + disclaimer_text + '</div>'
     '</div>'
 )
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 st.markdown(hero_html, unsafe_allow_html=True)
 
 # ── Chart + Key Metrics — use title case names ─────────────────────────────────
@@ -481,7 +497,30 @@ with col_chart:
         "Vehicle": [ice_name, byd_name],
         "Annual Cost (AUD)": [round(curr_ann, 2), round(new_ann, 2)]
     })
-    st.bar_chart(chart_df, x="Vehicle", y="Annual Cost (AUD)", color="Vehicle")
+    chart = alt.Chart(chart_df).mark_bar(
+        cornerRadiusTopLeft=8, cornerRadiusTopRight=8, size=72
+    ).encode(
+        x=alt.X("Vehicle:N", axis=alt.Axis(
+            labelAngle=0, title=None, labelFontSize=13, labelFont="Inter",
+            labelColor="#445566", tickColor="transparent", domainColor="#e2eaf4"
+        )),
+        y=alt.Y("Annual Cost (AUD):Q", axis=alt.Axis(
+            title="Annual Cost (AUD)", titleFont="Inter", titleFontSize=11,
+            titleColor="#8899aa", labelFont="Inter", labelFontSize=11,
+            labelColor="#8899aa", gridColor="#f0f4fa", tickColor="transparent",
+            domainColor="transparent"
+        )),
+        color=alt.Color("Vehicle:N",
+            scale=alt.Scale(domain=[ice_name, byd_name], range=["#0d3d7a", "#29B5E8"]),
+            legend=alt.Legend(title=None, labelFont="Inter", labelFontSize=12,
+                symbolType="square", symbolSize=120, orient="bottom", columns=2)
+        ),
+        tooltip=[
+            alt.Tooltip("Vehicle:N", title="Vehicle"),
+            alt.Tooltip("Annual Cost (AUD):Q", title="Annual Cost (AUD)", format="$,.2f")
+        ]
+    ).properties(height=300, background="transparent")
+    st.altair_chart(chart, use_container_width=True, theme=None)
 
 with col_stats:
     st.subheader("Key Metrics")
