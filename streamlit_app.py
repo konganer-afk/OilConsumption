@@ -199,7 +199,7 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 .flash_number_row { display:flex; align-items:center; justify-content:center; gap:16px; margin:0 0 8px; }
 .flash_val { font-size:clamp(4rem, 14vw, 19rem); font-weight:900; line-height:1;
     text-shadow:0 4px 32px rgba(0,0,0,0.3); margin:0; letter-spacing:-4px; }
-.flash_cite { font-size:1.4rem; font-weight:700; opacity:0.7; align-self:flex-start; margin-top:30px; }
+.flash_cite { font-size:1.3rem; font-weight:700; opacity:0.7; vertical-align:super; line-height:0; margin-left:0.15em; letter-spacing:0; }
 .flash_side { display:flex; flex-direction:column; align-items:flex-start; justify-content:center; gap:2px; }
 .flash_unit { font-size:0.92rem; font-weight:700; letter-spacing:3px; opacity:0.75; text-transform:uppercase; }
 .flash_disclaimer { background:rgba(0,0,0,0.18); border-radius:12px; padding:14px 20px;
@@ -508,8 +508,7 @@ hero_html = (
     '<div class="flashy-result">'
       '<p class="flash_label">Estimated Annual Savings</p>'
       '<div class="flash_number_row">'
-        '<h1 class="flash_val">$' + f"{savings:,.2f}" + '<span style="font-size:1em;font-weight:900;opacity:0.75;margin-left:0.18em;">AUD</span></h1>'
-        '<sup class="flash_cite">*[P1]</sup>'
+        '<h1 class="flash_val">$' + f"{savings:,.2f}" + '<span style="font-size:1em;font-weight:900;opacity:0.75;margin-left:0.18em;">AUD</span><sup class="flash_cite"> *[P1]</sup></h1>'
         '<div class="flash_side">'
           '<span class="flash_unit">Indicative Estimate</span>'
           '<span class="flash_unit">AUD per Year</span>'
