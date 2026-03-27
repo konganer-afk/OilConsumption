@@ -712,7 +712,7 @@ def generate_pdf():
     pdf.set_fill_color(240, 247, 255)
     pdf.set_font("Helvetica", "B", 7)
     pdf.multi_cell(0, 4,
-        "GENERAL ESTIMATE ONLY. Indicative figures only — not financial advice. Based on user inputs "
+        "GENERAL ESTIMATE ONLY. Indicative figures only - not financial advice. Based on user inputs "
         "and national averages. Individual results will vary. BYD data: greenvehicleguide.gov.au. "
         "Fuel default: ABS/DISER. Electricity default: AEMO.",
         border=1, fill=True)
