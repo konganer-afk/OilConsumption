@@ -44,10 +44,10 @@ BYD_PHEV_MODELS = {
 # ── CSS ────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap');
 
 /* ── LIGHT MODE BASE ─────────────────────────────────────────────────────── */
-html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
+html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!important; }
 /* Hide Streamlit chrome */
 #MainMenu, footer { visibility:hidden!important; }
 [data-testid="stHeader"] { height:0!important; }
@@ -528,18 +528,18 @@ with col_chart:
         cornerRadiusTopLeft=8, cornerRadiusTopRight=8, size=72
     ).encode(
         x=alt.X("Vehicle:N", axis=alt.Axis(
-            labelAngle=0, title=None, labelFontSize=13, labelFont="Inter",
+            labelAngle=0, title=None, labelFontSize=13, labelFont="Montserrat",
             labelColor=LABEL_CLR, tickColor="transparent", domainColor="transparent"
         )),
         y=alt.Y("Annual Cost (AUD):Q", axis=alt.Axis(
-            title="Annual Cost (AUD)", titleFont="Inter", titleFontSize=11,
-            titleColor=LABEL_CLR, labelFont="Inter", labelFontSize=11,
+            title="Annual Cost (AUD)", titleFont="Montserrat", titleFontSize=11,
+            titleColor=LABEL_CLR, labelFont="Montserrat", labelFontSize=11,
             labelColor=LABEL_CLR, gridColor=GRID_CLR,
             tickColor="transparent", domainColor="transparent"
         )),
         color=alt.Color("Vehicle:N",
             scale=alt.Scale(domain=[ice_name, byd_name], range=["#0d3d7a", "#29B5E8"]),
-            legend=alt.Legend(title=None, labelFont="Inter", labelFontSize=12,
+            legend=alt.Legend(title=None, labelFont="Montserrat", labelFontSize=12,
                 labelColor=LABEL_CLR, symbolType="square", symbolSize=120,
                 orient="bottom", columns=2)
         ),
