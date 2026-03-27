@@ -609,16 +609,10 @@ def generate_pdf():
         pdf.cell(0, 5, title, ln=True)
         pdf.set_text_color(30, 30, 30)
 
-    # ── Your Selection + Results side by side ──
-    top_y = pdf.get_y()
-    left_x = pdf.get_x()
-    col_left = 95
-    col_right = W - col_left - 2  # 2mm gap
-
-    # Left: Your Selection
+    # ── Your Selection (full width) ──
     section_title("Your Selection")
+    sel_lw, sel_vw = 62, W - 62
     pdf.set_font("Helvetica", "", 8)
-    sel_lw, sel_vw = 50, col_left - 50
     rows_sel = [
         ("ICE Segment [" + ice_cite + "]",  ice_name + " - " + str(ice_l100) + " L/100km"),
         ("BYD Model [" + byd_cite + "]",    byd_name + " - " + str(byd_val) + " " + byd_unit),
@@ -632,14 +626,13 @@ def generate_pdf():
         pdf.cell(sel_lw, 5, label, border=1, fill=True)
         pdf.set_fill_color(255, 255, 255)
         pdf.cell(sel_vw, 5, value, border=1, fill=True, ln=True)
-    left_bottom_y = pdf.get_y()
+    pdf.ln(2)
 
-    # Right: Results
-    pdf.set_xy(left_x + col_left + 2, top_y)
+    # ── Results (full width) ──
     section_title("Results")
+    rw = [W - 60, 40, 20]
     pdf.set_font("Helvetica", "B", 8)
     pdf.set_fill_color(224, 234, 251)
-    rw = [col_right - 45, 30, 15]
     for h, w in zip(["Metric", "Value", "Ref"], rw):
         pdf.cell(w, 5, h, border=1, fill=True)
     pdf.ln()
@@ -652,13 +645,9 @@ def generate_pdf():
         ("Cost Reduction",       f"{pct_saving:.1f}% cheaper",    "[V1]"),
     ]
     for lbl, val, ref in rows_res:
-        x_now = pdf.get_x()
         pdf.cell(rw[0], 5, lbl, border=1)
         pdf.cell(rw[1], 5, val, border=1)
         pdf.cell(rw[2], 5, ref, border=1, ln=True)
-    right_bottom_y = pdf.get_y()
-
-    pdf.set_y(max(left_bottom_y, right_bottom_y))
     pdf.ln(2)
 
     # ── Assumptions ──
@@ -704,13 +693,15 @@ def generate_pdf():
         cite_lines.append("  ".join("[D"+str(i)+"] "+v["name"]+": "+str(v["val"])+"L+"+str(v["wh_km"])+"Wh/km"
                                     for i,(k,v) in enumerate(BYD_PHEV_MODELS.items(),1)))
     for line in cite_lines:
-        pdf.cell(0, 4, line, ln=True)
+        pdf.set_x(12)
+        pdf.multi_cell(W, 4, line)
     pdf.ln(2)
 
     # ── Disclaimer ──
     pdf.set_fill_color(240, 247, 255)
     pdf.set_font("Helvetica", "B", 7)
-    pdf.multi_cell(0, 4,
+    pdf.set_x(12)
+    pdf.multi_cell(W, 4,
         "GENERAL ESTIMATE ONLY. Indicative figures only - not financial advice. Based on user inputs "
         "and national averages. Individual results will vary. BYD data: greenvehicleguide.gov.au. "
         "Fuel default: ABS/DISER. Electricity default: AEMO.",
