@@ -175,8 +175,16 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:first-child {
     font-size:0.88rem!important; font-weight:700!important; color:#1a1a2e!important;
 }
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:last-child {
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:nth-child(2) {
     font-size:0.72rem!important; color:#7788aa!important;
+}
+/* Citation superscript paragraph */
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:nth-child(3) {
+    font-size:0.58rem!important; color:#1a7fa3!important; font-weight:700!important;
+    margin:1px 0 0!important; line-height:1!important; letter-spacing:0.5px!important;
+}
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) > div:last-child > div > p:nth-child(3) {
+    color:rgba(255,255,255,0.65)!important;
 }
 
 /* Hero */
@@ -426,7 +434,7 @@ with col_ice:
     st.markdown('<p class="segment-header">' + SVG_CAR + ' Current ICE Segment</p>', unsafe_allow_html=True)
     ice_card_keys = list(ICE_SEGMENTS.keys())
     ice_options = [
-        "**" + k + "**\n\n" + str(v["l100"]) + " L/100km  [" + v["cite"] + "]"
+        "**" + k + "**\n\n" + str(v["l100"]) + " L/100km\n\n[" + v["cite"] + "]"
         for k, v in ICE_SEGMENTS.items()
     ]
     ice_sel = st.radio("ice_seg", ice_options, index=2, label_visibility="collapsed", key="ice_radio")
@@ -442,7 +450,7 @@ with col_byd:
         st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD PHEV Model</p>', unsafe_allow_html=True)
         byd_card_keys = list(BYD_PHEV_MODELS.keys())
         byd_options = [
-            "**" + k + "**\n\n" + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km  [" + v["cite"] + "]"
+            "**" + k + "**\n\n" + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km\n\n[" + v["cite"] + "]"
             for k, v in BYD_PHEV_MODELS.items()
         ]
         byd_sel = st.radio("byd_phev", byd_options, index=0, label_visibility="collapsed", key="phev_radio")
@@ -453,7 +461,7 @@ with col_byd:
         st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD EV Model</p>', unsafe_allow_html=True)
         byd_card_keys = list(BYD_EV_MODELS.keys())
         byd_options = [
-            "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + "  [" + v["cite"] + "]"
+            "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + "\n\n[" + v["cite"] + "]"
             for k, v in BYD_EV_MODELS.items()
         ]
         byd_sel = st.radio("byd_ev", byd_options, index=0, label_visibility="collapsed", key="ev_radio")
