@@ -44,10 +44,10 @@ BYD_PHEV_MODELS = {
 # ── CSS ────────────────────────────────────────────────────────────────────────
 st.markdown("""
 <style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700;900&display=swap');
 
 /* ── LIGHT MODE BASE ─────────────────────────────────────────────────────── */
-html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
+html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!important; }
 /* Hide Streamlit chrome */
 #MainMenu, footer { visibility:hidden!important; }
 [data-testid="stHeader"] { height:0!important; }
@@ -175,8 +175,16 @@ html, body, [class*="css"], .stApp { font-family:'Inter',sans-serif!important; }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:first-child {
     font-size:0.88rem!important; font-weight:700!important; color:#1a1a2e!important;
 }
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:last-child {
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:nth-child(2) {
     font-size:0.72rem!important; color:#7788aa!important;
+}
+/* Citation superscript paragraph */
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:nth-child(3) {
+    font-size:0.58rem!important; color:#1a7fa3!important; font-weight:700!important;
+    margin:1px 0 0!important; line-height:1!important; letter-spacing:0.5px!important;
+}
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) > div:last-child > div > p:nth-child(3) {
+    color:rgba(255,255,255,0.65)!important;
 }
 
 /* Hero */
@@ -426,7 +434,7 @@ with col_ice:
     st.markdown('<p class="segment-header">' + SVG_CAR + ' Current ICE Segment</p>', unsafe_allow_html=True)
     ice_card_keys = list(ICE_SEGMENTS.keys())
     ice_options = [
-        "**" + k + "**\n\n" + str(v["l100"]) + " L/100km  [" + v["cite"] + "]"
+        "**" + k + "**\n\n" + str(v["l100"]) + " L/100km\n\n[" + v["cite"] + "]"
         for k, v in ICE_SEGMENTS.items()
     ]
     ice_sel = st.radio("ice_seg", ice_options, index=2, label_visibility="collapsed", key="ice_radio")
@@ -442,7 +450,7 @@ with col_byd:
         st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD PHEV Model</p>', unsafe_allow_html=True)
         byd_card_keys = list(BYD_PHEV_MODELS.keys())
         byd_options = [
-            "**" + k + "**\n\n" + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km  [" + v["cite"] + "]"
+            "**" + k + "**\n\n" + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km\n\n[" + v["cite"] + "]"
             for k, v in BYD_PHEV_MODELS.items()
         ]
         byd_sel = st.radio("byd_phev", byd_options, index=0, label_visibility="collapsed", key="phev_radio")
@@ -453,7 +461,7 @@ with col_byd:
         st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD EV Model</p>', unsafe_allow_html=True)
         byd_card_keys = list(BYD_EV_MODELS.keys())
         byd_options = [
-            "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + "  [" + v["cite"] + "]"
+            "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + "\n\n[" + v["cite"] + "]"
             for k, v in BYD_EV_MODELS.items()
         ]
         byd_sel = st.radio("byd_ev", byd_options, index=0, label_visibility="collapsed", key="ev_radio")
@@ -528,18 +536,18 @@ with col_chart:
         cornerRadiusTopLeft=8, cornerRadiusTopRight=8, size=72
     ).encode(
         x=alt.X("Vehicle:N", axis=alt.Axis(
-            labelAngle=0, title=None, labelFontSize=13, labelFont="Inter",
+            labelAngle=0, title=None, labelFontSize=13, labelFont="Montserrat",
             labelColor=LABEL_CLR, tickColor="transparent", domainColor="transparent"
         )),
         y=alt.Y("Annual Cost (AUD):Q", axis=alt.Axis(
-            title="Annual Cost (AUD)", titleFont="Inter", titleFontSize=11,
-            titleColor=LABEL_CLR, labelFont="Inter", labelFontSize=11,
+            title="Annual Cost (AUD)", titleFont="Montserrat", titleFontSize=11,
+            titleColor=LABEL_CLR, labelFont="Montserrat", labelFontSize=11,
             labelColor=LABEL_CLR, gridColor=GRID_CLR,
             tickColor="transparent", domainColor="transparent"
         )),
         color=alt.Color("Vehicle:N",
             scale=alt.Scale(domain=[ice_name, byd_name], range=["#0d3d7a", "#29B5E8"]),
-            legend=alt.Legend(title=None, labelFont="Inter", labelFontSize=12,
+            legend=alt.Legend(title=None, labelFont="Montserrat", labelFontSize=12,
                 labelColor=LABEL_CLR, symbolType="square", symbolSize=120,
                 orient="bottom", columns=2)
         ),
@@ -581,126 +589,137 @@ with col_stats:
 def generate_pdf():
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_margins(20, 20, 20)
+    pdf.set_margins(12, 12, 12)
+    W = 186  # usable width (210 - 24mm margins)
 
+    # Header
     pdf.set_fill_color(26, 127, 163)
-    pdf.rect(0, 0, 210, 28, 'F')
+    pdf.rect(0, 0, 210, 20, 'F')
     pdf.set_text_color(255, 255, 255)
-    pdf.set_font("Helvetica", "B", 16)
-    pdf.set_y(8)
-    pdf.cell(0, 10, "BYD Savings Calculator - Summary Report", ln=True, align="C")
-    pdf.set_font("Helvetica", "", 9)
-    pdf.cell(0, 6, "Comparison Mode: ICE to " + mode, ln=True, align="C")
-    pdf.ln(10)
+    pdf.set_font("Helvetica", "B", 13)
+    pdf.set_y(5)
+    pdf.cell(0, 8, "BYD Savings Calculator - Summary Report", ln=True, align="C")
+    pdf.set_font("Helvetica", "", 8)
+    pdf.cell(0, 5, "Comparison Mode: ICE to " + mode, ln=True, align="C")
+    pdf.ln(5)
     pdf.set_text_color(30, 30, 30)
 
     def section_title(title):
-        pdf.set_font("Helvetica", "B", 11)
+        pdf.set_font("Helvetica", "B", 9)
         pdf.set_text_color(26, 127, 163)
-        pdf.cell(0, 8, title, ln=True)
+        pdf.cell(0, 5, title, ln=True)
         pdf.set_text_color(30, 30, 30)
 
+    # ── Your Selection + Results side by side ──
+    top_y = pdf.get_y()
+    left_x = pdf.get_x()
+    col_left = 95
+    col_right = W - col_left - 2  # 2mm gap
+
+    # Left: Your Selection
     section_title("Your Selection")
-    pdf.set_font("Helvetica", "", 9)
-    col_w = [85, 95]
+    pdf.set_font("Helvetica", "", 8)
+    sel_lw, sel_vw = 50, col_left - 50
     rows_sel = [
-        ("Current ICE Segment [" + ice_cite + "]", ice_name + " - " + str(ice_l100) + " L/100km"),
-        ("Target BYD Model [" + byd_cite + "]",    byd_name + " - " + str(byd_val) + " " + byd_unit),
-        ("Annual Distance [C2]",                   f"{ann_km:,.0f} km / {ann_miles:,.0f} mi."),
-        ("Days Driven per Week",                   str(days_per_week)),
-        ("Fuel Price [P1]",                        "$" + f"{fuel_price:.2f}" + " AUD/Litre"),
-        ("Electricity Price [P2]",                 "$" + f"{elec_price:.2f}" + " AUD/kWh"),
+        ("ICE Segment [" + ice_cite + "]",  ice_name + " - " + str(ice_l100) + " L/100km"),
+        ("BYD Model [" + byd_cite + "]",    byd_name + " - " + str(byd_val) + " " + byd_unit),
+        ("Annual Distance [C2]",            f"{ann_km:,.0f} km"),
+        ("Days / Week",                     str(days_per_week)),
+        ("Fuel Price [P1]",                 "$" + f"{fuel_price:.2f}" + " AUD/L"),
+        ("Electricity Price [P2]",          "$" + f"{elec_price:.2f}" + " AUD/kWh"),
     ]
     for label, value in rows_sel:
         pdf.set_fill_color(240, 247, 255)
-        pdf.cell(col_w[0], 7, label, border=1, fill=True)
+        pdf.cell(sel_lw, 5, label, border=1, fill=True)
         pdf.set_fill_color(255, 255, 255)
-        pdf.cell(col_w[1], 7, value, border=1, fill=True, ln=True)
-    pdf.ln(4)
+        pdf.cell(sel_vw, 5, value, border=1, fill=True, ln=True)
+    left_bottom_y = pdf.get_y()
 
+    # Right: Results
+    pdf.set_xy(left_x + col_left + 2, top_y)
     section_title("Results")
-    col_w3 = [80, 75, 25]
+    pdf.set_font("Helvetica", "B", 8)
     pdf.set_fill_color(224, 234, 251)
-    pdf.set_font("Helvetica", "B", 9)
-    for h, w in zip(["Metric", "Value", "Ref"], col_w3):
-        pdf.cell(w, 7, h, border=1, fill=True)
-    pdf.ln()
-    pdf.set_font("Helvetica", "", 9)
-    rows_res = [
-        ("Current ICE Annual Cost",      "$" + f"{curr_ann:,.2f}" + " AUD",  "[C1]"),
-        (byd_name + " Annual",           "$" + f"{new_ann:,.2f}" + " AUD",   "[S1]"),
-        ("Estimated Annual Savings",     "$" + f"{savings:,.2f}" + " AUD",   "[P1]"),
-        ("Monthly Saving",               "$" + f"{savings/12:,.2f}" + "/mo", "[S2]"),
-        ("Cost Reduction",               f"{pct_saving:.1f}% cheaper",       "[V1]"),
-    ]
-    for label, value, ref in rows_res:
-        pdf.cell(col_w3[0], 7, label, border=1)
-        pdf.cell(col_w3[1], 7, value, border=1)
-        pdf.cell(col_w3[2], 7, ref, border=1, ln=True)
-    pdf.ln(4)
-
-    section_title("Assumptions & Data Sources")
-    col_w4 = [18, 58, 62, 42]
-    pdf.set_fill_color(224, 234, 251)
-    pdf.set_font("Helvetica", "B", 9)
-    for h, w in zip(["Ref", "Parameter", "Value", "Source"], col_w4):
-        pdf.cell(w, 7, h, border=1, fill=True)
+    rw = [col_right - 45, 30, 15]
+    for h, w in zip(["Metric", "Value", "Ref"], rw):
+        pdf.cell(w, 5, h, border=1, fill=True)
     pdf.ln()
     pdf.set_font("Helvetica", "", 8)
+    rows_res = [
+        ("Current ICE Annual",   "$" + f"{curr_ann:,.2f}",        "[C1]"),
+        (byd_name + " Annual",   "$" + f"{new_ann:,.2f}",         "[S1]"),
+        ("Annual Savings",       "$" + f"{savings:,.2f}",         "[P1]"),
+        ("Monthly Saving",       "$" + f"{savings/12:,.2f}/mo",   "[S2]"),
+        ("Cost Reduction",       f"{pct_saving:.1f}% cheaper",    "[V1]"),
+    ]
+    for lbl, val, ref in rows_res:
+        x_now = pdf.get_x()
+        pdf.cell(rw[0], 5, lbl, border=1)
+        pdf.cell(rw[1], 5, val, border=1)
+        pdf.cell(rw[2], 5, ref, border=1, ln=True)
+    right_bottom_y = pdf.get_y()
+
+    pdf.set_y(max(left_bottom_y, right_bottom_y))
+    pdf.ln(2)
+
+    # ── Assumptions ──
+    section_title("Assumptions & Data Sources")
+    col_w4 = [14, 52, 72, 48]
+    pdf.set_fill_color(224, 234, 251)
+    pdf.set_font("Helvetica", "B", 8)
+    for h, w in zip(["Ref", "Parameter", "Value", "Source"], col_w4):
+        pdf.cell(w, 5, h, border=1, fill=True)
+    pdf.ln()
+    pdf.set_font("Helvetica", "", 7)
     assumption_rows = [
-        ("[P1]",               "Fuel Price",       "$" + f"{fuel_price:.2f}" + " AUD/L",                   "ABS / DISER"),
-        ("[" + ice_cite + "]", "ICE Segment",      ice_name + ": " + str(ice_l100) + " L/100km",           "Green Vehicle Guide"),
-        ("[C2]",               "Annual Distance",   f"{ann_km:,.0f} km",                                    "User input"),
-        ("[" + byd_cite + "]", byd_name + " Fuel",  str(byd_val) + " L/100km",                              "Green Vehicle Guide"),
-        ("[V1]",               "% Saving",         f"{pct_saving:.1f}% cheaper",                           "Calculated"),
-        ("[P2]",               "Electricity Price", "$" + f"{elec_price:.2f}" + " AUD/kWh",                 "AEMO"),
+        ("[P1]",               "Fuel Price",          "$" + f"{fuel_price:.2f}" + " AUD/L",         "ABS / DISER"),
+        ("[P2]",               "Electricity Price",   "$" + f"{elec_price:.2f}" + " AUD/kWh",       "AEMO"),
+        ("[" + ice_cite + "]", "ICE Segment",         ice_name + ": " + str(ice_l100) + " L/100km", "Green Vehicle Guide"),
+        ("[" + byd_cite + "]", byd_name + " Fuel",    str(byd_val) + " L/100km",                    "Green Vehicle Guide"),
+        ("[C2]",               "Annual Distance",      f"{ann_km:,.0f} km",                          "User input"),
+        ("[V1]",               "% Saving",            f"{pct_saving:.1f}% cheaper",                 "Calculated"),
     ]
     if mode == "PHEV":
-        assumption_rows.insert(4, ("[" + byd_cite + "]", byd_name + " Elec.", str(byd_wh_km) + " Wh/km", "Green Vehicle Guide"))
+        assumption_rows.insert(4, ("[" + byd_cite + "]", byd_name + " Electricity", str(byd_wh_km) + " Wh/km", "Green Vehicle Guide"))
     for row in assumption_rows:
         for i, cell in enumerate(row):
-            pdf.cell(col_w4[i], 6, cell, border=1)
+            pdf.cell(col_w4[i], 5, cell, border=1)
         pdf.ln()
-    pdf.ln(4)
-
-    section_title("Citation & Formula Key")
-    pdf.set_font("Helvetica", "", 8)
-    cite_lines = [
-        "[P1] Fuel price - user-set or ABS/DISER national average.",
-        "[C1] Current Monthly Cost = (Annual km / 100) x ICE L/100km x Fuel Price / 12",
-        "[C2] Annual Distance = Daily Commute x Days/week x 52 weeks",
-        "[S1] BYD Monthly Cost = (Annual km / 100) x BYD Consumption x Energy Price / 12",
-        "[S2] Monthly Saving = ICE Monthly [C1] - BYD Monthly [S1]",
-        "[V1] % Value = (ICE Annual - BYD Annual) / ICE Annual x 100",
-        "[I1]-[I4] ICE segment averages - Green Vehicle Guide",
-    ]
-    cite_lines.insert(1, "[P2] Electricity price - user-set or AEMO national average.")
-    if mode == "EV":
-        for i, (k, v) in enumerate(BYD_EV_MODELS.items(), 1):
-            cite_lines.append("[D" + str(i) + "] " + v["name"] + ": " + str(v["val"]) + " kWh/100km - Green Vehicle Guide")
-    else:
-        cite_lines.append("[S1] PHEV Cost = km x (L/100km / 100 x Fuel Price + Wh/km / 1000 x Elec. Price)")
-        for i, (k, v) in enumerate(BYD_PHEV_MODELS.items(), 1):
-            cite_lines.append("[D" + str(i) + "] " + v["name"] + ": " + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km - Green Vehicle Guide")
-    for line in cite_lines:
-        pdf.cell(0, 5, line, ln=True)
-    pdf.ln(4)
-
-    pdf.set_fill_color(240, 247, 255)
-    pdf.set_font("Helvetica", "B", 8)
-    pdf.multi_cell(
-        0, 5,
-        "GENERAL ESTIMATE ONLY. This calculator provides indicative figures and does not constitute "
-        "financial advice. Results are based on user-provided inputs and national averages. Individual "
-        "results will vary. Individual results may still vary based on driving habits. Not a substitute "
-        "for professional financial or automotive advice. BYD model consumption data sourced from "
-        "greenvehicleguide.gov.au. Fuel price default: ABS/DISER. Electricity price default: AEMO.",
-        border=1, fill=True
-    )
     pdf.ln(2)
+
+    # ── Citation Key ──
+    section_title("Citation & Formula Key")
     pdf.set_font("Helvetica", "", 7)
+    cite_lines = [
+        "[P1] Fuel price - user-set or ABS/DISER avg.   [P2] Electricity price - user-set or AEMO avg.",
+        "[C1] ICE Annual = (km/100) x L/100km x Fuel Price   [C2] Annual km = Daily km x Days/wk x 52",
+        "[S1] BYD Annual = (km/100) x Consumption x Energy Price   [S2] Monthly Saving = C1/12 - S1/12",
+        "[V1] % Saving = (ICE Annual - BYD Annual) / ICE Annual x 100   [I1-I4] ICE averages - GVG",
+    ]
+    if mode == "PHEV":
+        cite_lines.append("[S1] PHEV = km x (L/100km/100 x Fuel$ + Wh/km/1000 x Elec$)")
+    if mode == "EV":
+        cite_lines.append("  ".join("[D"+str(i)+"] "+v["name"]+": "+str(v["val"])+" kWh/100km"
+                                    for i,(k,v) in enumerate(BYD_EV_MODELS.items(),1)))
+    else:
+        cite_lines.append("  ".join("[D"+str(i)+"] "+v["name"]+": "+str(v["val"])+"L+"+str(v["wh_km"])+"Wh/km"
+                                    for i,(k,v) in enumerate(BYD_PHEV_MODELS.items(),1)))
+    for line in cite_lines:
+        pdf.cell(0, 4, line, ln=True)
+    pdf.ln(2)
+
+    # ── Disclaimer ──
+    pdf.set_fill_color(240, 247, 255)
+    pdf.set_font("Helvetica", "B", 7)
+    pdf.multi_cell(0, 4,
+        "GENERAL ESTIMATE ONLY. Indicative figures only — not financial advice. Based on user inputs "
+        "and national averages. Individual results will vary. BYD data: greenvehicleguide.gov.au. "
+        "Fuel default: ABS/DISER. Electricity default: AEMO.",
+        border=1, fill=True)
+    pdf.ln(1)
+    pdf.set_font("Helvetica", "", 6)
     pdf.set_text_color(150, 150, 150)
-    pdf.cell(0, 5, "General estimates only. Not financial advice. Sources: ABS, DISER, AEMO, Green Vehicle Guide.", ln=True, align="C")
+    pdf.cell(0, 4, "General estimates only. Not financial advice. Sources: ABS, DISER, AEMO, Green Vehicle Guide.", ln=True, align="C")
 
     return bytes(pdf.output())
 
