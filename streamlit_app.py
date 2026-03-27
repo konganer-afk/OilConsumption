@@ -693,13 +693,15 @@ def generate_pdf():
         cite_lines.append("  ".join("[D"+str(i)+"] "+v["name"]+": "+str(v["val"])+"L+"+str(v["wh_km"])+"Wh/km"
                                     for i,(k,v) in enumerate(BYD_PHEV_MODELS.items(),1)))
     for line in cite_lines:
-        pdf.multi_cell(0, 4, line)
+        pdf.set_x(12)
+        pdf.multi_cell(W, 4, line)
     pdf.ln(2)
 
     # ── Disclaimer ──
     pdf.set_fill_color(240, 247, 255)
     pdf.set_font("Helvetica", "B", 7)
-    pdf.multi_cell(0, 4,
+    pdf.set_x(12)
+    pdf.multi_cell(W, 4,
         "GENERAL ESTIMATE ONLY. Indicative figures only - not financial advice. Based on user inputs "
         "and national averages. Individual results will vary. BYD data: greenvehicleguide.gov.au. "
         "Fuel default: ABS/DISER. Electricity default: AEMO.",
