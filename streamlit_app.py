@@ -81,6 +81,38 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 }
 .ctrl-label svg { flex-shrink:0; color:#1a7fa3; }
 
+/* Compact number input beside sliders (inside columns) — restore full column width */
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="stNumberInput"] {
+    width:auto!important;
+}
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="stNumberInput"] input {
+    font-size:0.78rem!important; font-weight:700!important;
+    text-align:center!important; padding:2px 4px!important;
+}
+[data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="stNumberInput"] button {
+    display:none!important;
+}
+/* Fuel / Electricity price inputs — white background, 2/3 width */
+[data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] {
+    width:60%!important;
+}
+[data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] > div {
+    background:#ffffff!important; border-color:#d0dce8!important; transition:box-shadow 0.15s,border-color 0.15s!important;
+}
+[data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] > div:hover {
+    border-color:#e8192c!important; box-shadow:0 0 0 2px rgba(232,25,44,0.35)!important;
+}
+[data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] input {
+    background:#ffffff!important;
+}
+[data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] button {
+    background:#ffffff!important; border-color:#d0dce8!important; transition:background 0.15s,color 0.15s,box-shadow 0.15s!important;
+}
+[data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] button:hover {
+    background:#e8192c!important; color:#ffffff!important;
+    box-shadow:0 0 8px rgba(232,25,44,0.55)!important; border-color:#e8192c!important;
+}
+
 /* Controls section header */
 [data-testid="stSidebar"] strong { font-size:0.68rem!important; font-weight:800!important;
     text-transform:uppercase!important; letter-spacing:3px!important; color:#aab!important; }
@@ -408,16 +440,63 @@ def ctrl_label(icon, text):
 
 ctrl_label(ICO_RULER, "Distance Unit")
 unit = st.sidebar.radio("Distance Unit", ["km.", "mi."], horizontal=True, label_visibility="collapsed")
+if "daily_km" not in st.session_state:
+    st.session_state["daily_km"] = 48
+if "daily_mi" not in st.session_state:
+    st.session_state["daily_mi"] = 30
+
 if unit == "mi.":
     ctrl_label(ICO_CAR, "Daily Commute (mi.)")
-    daily_miles = st.sidebar.slider("Daily Commute (mi.)", 0, 200, 30, label_visibility="collapsed")
+    _mi_c1, _mi_c2 = st.sidebar.columns([4, 1])
+    with _mi_c1:
+        mi_sl = st.slider("Daily Commute (mi.)", 0, 200,
+                          value=st.session_state["daily_mi"], label_visibility="collapsed")
+    with _mi_c2:
+        mi_ni = st.number_input("mi", min_value=0, max_value=200, step=1,
+                                value=st.session_state["daily_mi"], label_visibility="collapsed")
+    if mi_sl != st.session_state["daily_mi"]:
+        st.session_state["daily_mi"] = mi_sl
+        st.rerun()
+    elif mi_ni != st.session_state["daily_mi"]:
+        st.session_state["daily_mi"] = int(mi_ni)
+        st.rerun()
+    daily_miles = float(st.session_state["daily_mi"])
 else:
     ctrl_label(ICO_CAR, "Daily Commute (km.)")
-    daily_km_input = st.sidebar.slider("Daily Commute (km.)", 0, 320, 48, label_visibility="collapsed")
+    _km_c1, _km_c2 = st.sidebar.columns([4, 1])
+    with _km_c1:
+        km_sl = st.slider("Daily Commute (km.)", 0, 320,
+                          value=st.session_state["daily_km"], label_visibility="collapsed")
+    with _km_c2:
+        km_ni = st.number_input("km", min_value=0, max_value=320, step=1,
+                                value=st.session_state["daily_km"], label_visibility="collapsed")
+    if km_sl != st.session_state["daily_km"]:
+        st.session_state["daily_km"] = km_sl
+        st.rerun()
+    elif km_ni != st.session_state["daily_km"]:
+        st.session_state["daily_km"] = int(km_ni)
+        st.rerun()
+    daily_km_input = st.session_state["daily_km"]
     daily_miles = daily_km_input / 1.60934
 
+if "daily_days" not in st.session_state:
+    st.session_state["daily_days"] = 5
+
 ctrl_label(ICO_CAL, "Days Driven per Week")
-days_per_week = st.sidebar.slider("Days Driven per Week", 1, 7, 5, label_visibility="collapsed")
+_d_c1, _d_c2 = st.sidebar.columns([4, 1])
+with _d_c1:
+    d_sl = st.slider("Days Driven per Week", 1, 7,
+                     value=st.session_state["daily_days"], label_visibility="collapsed")
+with _d_c2:
+    d_ni = st.number_input("days", min_value=1, max_value=7, step=1,
+                           value=st.session_state["daily_days"], label_visibility="collapsed")
+if d_sl != st.session_state["daily_days"]:
+    st.session_state["daily_days"] = d_sl
+    st.rerun()
+elif d_ni != st.session_state["daily_days"]:
+    st.session_state["daily_days"] = int(d_ni)
+    st.rerun()
+days_per_week = st.session_state["daily_days"]
 ctrl_label(ICO_FUEL, "Fuel Price (AUD/Litre)")
 fuel_price = st.sidebar.number_input("Fuel Price (AUD/Litre)", value=1.85, step=0.01, label_visibility="collapsed")
 st.sidebar.caption("Default: ABS/DISER national average. Enter your local price for accuracy.")
