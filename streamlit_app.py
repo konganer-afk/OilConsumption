@@ -31,7 +31,6 @@ BYD_EV_MODELS = {
     "BYD DOLPHIN":   {"name": "BYD Dolphin",   "val": 12.6, "unit": "kWh/100km", "cite": "D4"},
     "BYD SEAL":      {"name": "BYD Seal",      "val": 13.8, "unit": "kWh/100km", "cite": "D5"},
     "BYD SEALION 7": {"name": "BYD Sealion 7", "val": 17.9, "unit": "kWh/100km", "cite": "D6"},
-    "DENZA D9":      {"name": "Denza D9",      "val": 25.6, "unit": "kWh/100km", "cite": "D7"},
 }
 
 # L/100km (FuelConsumptionCombined) + Wh/km (EnergyConsumptionWhkm) from GVG
@@ -40,7 +39,6 @@ BYD_PHEV_MODELS = {
     "BYD SEALION 6": {"name": "BYD Sealion 6", "val": 1.1, "unit": "L/100km", "wh_km": 169, "cite": "D2"},
     "BYD SEALION 8": {"name": "BYD Sealion 8", "val": 1.1, "unit": "L/100km", "wh_km": 150, "cite": "D3"},
     "BYD SHARK 6":   {"name": "BYD Shark 6",   "val": 2.0, "unit": "L/100km", "wh_km": 212, "cite": "D4"},
-    "DENZA B5":      {"name": "Denza B5",      "val": 1.9, "unit": "L/100km", "wh_km": 233, "cite": "D5"},
 }
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
