@@ -447,6 +447,11 @@ h1 a[href], h2 a[href], h3 a[href], h4 a[href] { display:none!important; }
     [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(6):last-child) {
         grid-template-columns: repeat(2, 1fr) !important;
     }
+    /* Enforce uniform card height across all vehicle grids on mobile */
+    [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
+        min-height: 96px !important;
+        height: 96px !important;
+    }
 
     /* Metric cards: reduce font size slightly */
     .metric-value, .metric-value-green { font-size: 1.4rem !important; }
