@@ -574,100 +574,6 @@ savings    = curr_ann - new_ann
 pct_saving = (savings / curr_ann * 100) if curr_ann > 0 else 0
 ann_dist_display = (f"{ann_miles:,.0f}" + " mi.") if unit == "mi." else (f"{ann_km:,.0f}" + " km.")
 
-# ── Hero ───────────────────────────────────────────────────────────────────────
-segment_note_html = (
-    "<br><strong>Segment note:</strong> For accurate comparisons, use vehicles of the same segment "
-    "(e.g. small hatch vs. small hatch). Mixing segments will produce misleading results."
-)
-
-disclaimer_text = (
-    '<strong>General Estimate Only.</strong> This calculator provides indicative figures and does not '
-    'constitute financial advice. Results are based on user-provided inputs and national averages. '
-    'Individual results will vary. Individual results may still vary based on driving habits. '
-    'Not a substitute for professional financial or automotive advice.'
-    + segment_note_html
-)
-
-hero_html = (
-    '<div class="flashy-result">'
-      '<p class="flash_label">Estimated Annual Savings</p>'
-      '<div class="flash_number_row">'
-        '<h1 class="flash_val">$' + f"{savings:,.2f}" + '<span style="font-size:1em;font-weight:900;opacity:0.75;margin-left:0.18em;">AUD</span><sup class="flash_cite"> *[P1]</sup></h1>'
-        '<div class="flash_side">'
-          '<span class="flash_unit">Indicative Estimate</span>'
-          '<span class="flash_unit">AUD per Year</span>'
-        '</div>'
-      '</div>'
-      '<div class="flash_disclaimer">' + disclaimer_text + '</div>'
-    '</div>'
-)
-st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
-st.markdown(hero_html, unsafe_allow_html=True)
-
-# ── Chart + Key Metrics — use title case names ─────────────────────────────────
-col_chart, col_stats = st.columns([2, 1], gap="large")
-
-with col_chart:
-    st.subheader("Cost Comparison")
-    chart_df = pd.DataFrame({
-        "Vehicle": [ice_name, byd_name],
-        "Annual Cost (AUD)": [round(curr_ann, 2), round(new_ann, 2)]
-    })
-    LABEL_CLR = "#7a90a8"
-    GRID_CLR  = "#dce8f5"
-    chart = alt.Chart(chart_df).mark_bar(
-        cornerRadiusTopLeft=8, cornerRadiusTopRight=8, size=72
-    ).encode(
-        x=alt.X("Vehicle:N", axis=alt.Axis(
-            labelAngle=0, title=None, labelFontSize=13, labelFont="Montserrat",
-            labelColor=LABEL_CLR, tickColor="transparent", domainColor="transparent"
-        )),
-        y=alt.Y("Annual Cost (AUD):Q", axis=alt.Axis(
-            title="Annual Cost (AUD)", titleFont="Montserrat", titleFontSize=11,
-            titleColor=LABEL_CLR, labelFont="Montserrat", labelFontSize=11,
-            labelColor=LABEL_CLR, gridColor=GRID_CLR,
-            tickColor="transparent", domainColor="transparent"
-        )),
-        color=alt.Color("Vehicle:N",
-            scale=alt.Scale(domain=[ice_name, byd_name], range=["#0d3d7a", "#29B5E8"]),
-            legend=alt.Legend(title=None, labelFont="Montserrat", labelFontSize=12,
-                labelColor=LABEL_CLR, symbolType="square", symbolSize=120,
-                orient="bottom", columns=2)
-        ),
-        tooltip=[
-            alt.Tooltip("Vehicle:N", title="Vehicle"),
-            alt.Tooltip("Annual Cost (AUD):Q", title="Annual Cost (AUD)", format="$,.2f")
-        ]
-    ).properties(height=300, background="transparent")
-    st.altair_chart(chart, use_container_width=True, theme=None)
-
-with col_stats:
-    st.subheader("Key Metrics")
-    metrics_html = (
-        '<div class="metric-card">'
-          '<p class="metric-label">Current Monthly</p>'
-          '<p class="metric-value">$' + f"{curr_ann/12:,.2f}" + '<sup class="cite-tag">[C1]</sup></p>'
-          '<p class="metric-sub">' + ice_name + ' · ' + str(ice_l100) + ' L/100km <sup>[' + ice_cite + ']</sup></p>'
-        '</div>'
-        '<div class="metric-card">'
-          '<p class="metric-label">' + byd_name + ' Monthly</p>'
-          '<p class="metric-value">$' + f"{new_ann/12:,.2f}" + '<sup class="cite-tag">[S1]</sup></p>'
-          '<p class="metric-delta">&#8595; &minus;$' + f"{savings/12:,.2f}" + '/mo vs ICE <sup class="cite-tag">[S2]</sup></p>'
-          '<p class="metric-sub">' + (str(byd_val) + ' L/100km + ' + str(byd_wh_km) + ' Wh/km' if mode == "PHEV" else str(byd_val) + ' ' + byd_unit) + ' <sup>[' + byd_cite + ']</sup></p>'
-        '</div>'
-        '<div class="metric-card">'
-          '<p class="metric-label">Annual Distance</p>'
-          '<p class="metric-value">' + ann_dist_display + '<sup class="cite-tag">[C2]</sup></p>'
-          '<p class="metric-sub">' + str(days_per_week) + ' days/week &times; 52 weeks</p>'
-        '</div>'
-        '<div class="metric-card-green">'
-          '<p class="metric-label" style="color:#137333;">Estimated Value</p>'
-          '<p class="metric-value-green">' + f"{pct_saving:.1f}" + '% cheaper<sup class="cite-tag">[V1]</sup></p>'
-          '<p class="metric-sub-green">vs ' + ice_name + '</p>'
-        '</div>'
-    )
-    st.markdown(metrics_html, unsafe_allow_html=True)
-
 # ── PDF Generation — title case names throughout ───────────────────────────────
 def generate_pdf():
     pdf = FPDF()
@@ -797,7 +703,37 @@ def generate_pdf():
 
     return bytes(pdf.output())
 
-# ── Download Button ────────────────────────────────────────────────────────────
+# ── Hero ───────────────────────────────────────────────────────────────────────
+segment_note_html = (
+    "<br><strong>Segment note:</strong> For accurate comparisons, use vehicles of the same segment "
+    "(e.g. small hatch vs. small hatch). Mixing segments will produce misleading results."
+)
+
+disclaimer_text = (
+    '<strong>General Estimate Only.</strong> This calculator provides indicative figures and does not '
+    'constitute financial advice. Results are based on user-provided inputs and national averages. '
+    'Individual results will vary. Individual results may still vary based on driving habits. '
+    'Not a substitute for professional financial or automotive advice.'
+    + segment_note_html
+)
+
+hero_html = (
+    '<div class="flashy-result">'
+      '<p class="flash_label">Estimated Annual Savings</p>'
+      '<div class="flash_number_row">'
+        '<h1 class="flash_val">$' + f"{savings:,.2f}" + '<span style="font-size:1em;font-weight:900;opacity:0.75;margin-left:0.18em;">AUD</span><sup class="flash_cite"> *[P1]</sup></h1>'
+        '<div class="flash_side">'
+          '<span class="flash_unit">Indicative Estimate</span>'
+          '<span class="flash_unit">AUD per Year</span>'
+        '</div>'
+      '</div>'
+      '<div class="flash_disclaimer">' + disclaimer_text + '</div>'
+    '</div>'
+)
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+st.markdown(hero_html, unsafe_allow_html=True)
+
+# ── Download Button — placed near the hero ─────────────────────────────────────
 pdf_bytes = generate_pdf()
 st.download_button(
     label="Download as PDF",
@@ -805,6 +741,72 @@ st.download_button(
     file_name="BYD_Savings_Summary.pdf",
     mime="application/pdf"
 )
+
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+
+# ── Chart + Key Metrics — use title case names ─────────────────────────────────
+col_chart, col_stats = st.columns([1.2, 1], gap="large")
+
+with col_chart:
+    st.markdown('<h3 style="color:#0d2a4a;font-weight:800;margin-bottom:4px;font-size:1.35rem;letter-spacing:-0.3px;">Cost Comparison</h3>', unsafe_allow_html=True)
+    chart_df = pd.DataFrame({
+        "Vehicle": [ice_name, byd_name],
+        "Annual Cost (AUD)": [round(curr_ann, 2), round(new_ann, 2)]
+    })
+    LABEL_CLR = "#7a90a8"
+    GRID_CLR  = "#dce8f5"
+    chart = alt.Chart(chart_df).mark_bar(
+        cornerRadiusTopLeft=8, cornerRadiusTopRight=8, size=72
+    ).encode(
+        x=alt.X("Vehicle:N", axis=alt.Axis(
+            labelAngle=0, title=None, labelFontSize=13, labelFont="Montserrat",
+            labelColor=LABEL_CLR, tickColor="transparent", domainColor="transparent"
+        )),
+        y=alt.Y("Annual Cost (AUD):Q", axis=alt.Axis(
+            title="Annual Cost (AUD)", titleFont="Montserrat", titleFontSize=11,
+            titleColor=LABEL_CLR, labelFont="Montserrat", labelFontSize=11,
+            labelColor=LABEL_CLR, gridColor=GRID_CLR,
+            tickColor="transparent", domainColor="transparent"
+        )),
+        color=alt.Color("Vehicle:N",
+            scale=alt.Scale(domain=[ice_name, byd_name], range=["#0d3d7a", "#29B5E8"]),
+            legend=alt.Legend(title=None, labelFont="Montserrat", labelFontSize=12,
+                labelColor=LABEL_CLR, symbolType="square", symbolSize=120,
+                orient="bottom", columns=2)
+        ),
+        tooltip=[
+            alt.Tooltip("Vehicle:N", title="Vehicle"),
+            alt.Tooltip("Annual Cost (AUD):Q", title="Annual Cost (AUD)", format="$,.2f")
+        ]
+    ).properties(height=481, background="transparent")
+    st.altair_chart(chart, use_container_width=True, theme=None)
+
+with col_stats:
+    st.markdown('<h3 style="color:#0d2a4a;font-weight:800;margin-bottom:4px;font-size:1.35rem;letter-spacing:-0.3px;">Key Metrics</h3>', unsafe_allow_html=True)
+    metrics_html = (
+        '<div class="metric-card">'
+          '<p class="metric-label">Current Monthly</p>'
+          '<p class="metric-value">$' + f"{curr_ann/12:,.2f}" + '<sup class="cite-tag">[C1]</sup></p>'
+          '<p class="metric-sub">' + ice_name + ' · ' + str(ice_l100) + ' L/100km <sup>[' + ice_cite + ']</sup></p>'
+        '</div>'
+        '<div class="metric-card">'
+          '<p class="metric-label">' + byd_name + ' Monthly</p>'
+          '<p class="metric-value">$' + f"{new_ann/12:,.2f}" + '<sup class="cite-tag">[S1]</sup></p>'
+          '<p class="metric-delta">&#8595; &minus;$' + f"{savings/12:,.2f}" + '/mo vs ICE <sup class="cite-tag">[S2]</sup></p>'
+          '<p class="metric-sub">' + (str(byd_val) + ' L/100km + ' + str(byd_wh_km) + ' Wh/km' if mode == "PHEV" else str(byd_val) + ' ' + byd_unit) + ' <sup>[' + byd_cite + ']</sup></p>'
+        '</div>'
+        '<div class="metric-card">'
+          '<p class="metric-label">Annual Distance</p>'
+          '<p class="metric-value">' + ann_dist_display + '<sup class="cite-tag">[C2]</sup></p>'
+          '<p class="metric-sub">' + str(days_per_week) + ' days/week &times; 52 weeks</p>'
+        '</div>'
+        '<div class="metric-card-green">'
+          '<p class="metric-label" style="color:#137333;">Estimated Value</p>'
+          '<p class="metric-value-green">' + f"{pct_saving:.1f}" + '% cheaper<sup class="cite-tag">[V1]</sup></p>'
+          '<p class="metric-sub-green">vs ' + ice_name + '</p>'
+        '</div>'
+    )
+    st.markdown(metrics_html, unsafe_allow_html=True)
 
 # ── Assumptions — title case names ────────────────────────────────────────────
 if mode == "PHEV":
