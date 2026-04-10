@@ -439,10 +439,13 @@ h1 a[href], h2 a[href], h3 a[href], h4 a[href] { display:none!important; }
     .flash_label { letter-spacing: 4px !important; font-size: 0.82rem !important; }
     .flashy-result { padding: 28px 20px !important; }
 
-    /* Vehicle cards: single column on mobile so text never wraps */
-    [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child),
+    /* Vehicle cards: collapse 4-col ICE to 2-col */
+    [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child) {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    /* Vehicle cards: collapse 3-col BYD EV to 2-col */
     [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(6):last-child) {
-        grid-template-columns: 1fr !important;
+        grid-template-columns: repeat(2, 1fr) !important;
     }
 
     /* Metric cards: reduce font size slightly */
