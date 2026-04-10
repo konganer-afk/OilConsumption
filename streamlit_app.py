@@ -81,6 +81,14 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 }
 .ctrl-label svg { flex-shrink:0; color:#1a7fa3; }
 
+/* Placeholder text colour */
+[data-testid="stSidebar"] [data-testid="stNumberInput"] input::placeholder {
+    color:#aab8c8!important; opacity:1!important;
+}
+[data-theme="dark"] [data-testid="stNumberInput"] input::placeholder {
+    color:#445566!important; opacity:1!important;
+}
+
 /* Compact number input beside sliders (inside columns) — restore full column width */
 [data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="stNumberInput"] {
     width:auto!important;
@@ -441,7 +449,7 @@ def ctrl_label(icon, text):
 ctrl_label(ICO_RULER, "Distance Unit")
 unit = st.sidebar.radio("Distance Unit", ["km.", "mi."], horizontal=True, label_visibility="collapsed")
 if "daily_km" not in st.session_state:
-    st.session_state["daily_km"] = 48
+    st.session_state["daily_km"] = 35
 if "daily_mi" not in st.session_state:
     st.session_state["daily_mi"] = 30
 
@@ -453,7 +461,7 @@ if unit == "mi.":
                           value=st.session_state["daily_mi"], label_visibility="collapsed")
     with _mi_c2:
         mi_ni = st.number_input("mi", min_value=0, max_value=200, step=1,
-                                value=st.session_state["daily_mi"], label_visibility="collapsed")
+                                value=st.session_state["daily_mi"], placeholder="30", label_visibility="collapsed")
     if mi_sl != st.session_state["daily_mi"]:
         st.session_state["daily_mi"] = mi_sl
         st.rerun()
@@ -469,7 +477,7 @@ else:
                           value=st.session_state["daily_km"], label_visibility="collapsed")
     with _km_c2:
         km_ni = st.number_input("km", min_value=0, max_value=320, step=1,
-                                value=st.session_state["daily_km"], label_visibility="collapsed")
+                                value=st.session_state["daily_km"], placeholder="35", label_visibility="collapsed")
     if km_sl != st.session_state["daily_km"]:
         st.session_state["daily_km"] = km_sl
         st.rerun()
@@ -489,7 +497,7 @@ with _d_c1:
                      value=st.session_state["daily_days"], label_visibility="collapsed")
 with _d_c2:
     d_ni = st.number_input("days", min_value=1, max_value=7, step=1,
-                           value=st.session_state["daily_days"], label_visibility="collapsed")
+                           value=st.session_state["daily_days"], placeholder="5", label_visibility="collapsed")
 if d_sl != st.session_state["daily_days"]:
     st.session_state["daily_days"] = d_sl
     st.rerun()
@@ -498,12 +506,11 @@ elif d_ni != st.session_state["daily_days"]:
     st.rerun()
 days_per_week = st.session_state["daily_days"]
 ctrl_label(ICO_FUEL, "Fuel Price (AUD/Litre)")
-fuel_price = st.sidebar.number_input("Fuel Price (AUD/Litre)", value=1.85, step=0.01, label_visibility="collapsed")
+fuel_price = st.sidebar.number_input("Fuel Price (AUD/Litre)", value=1.85, step=0.01, placeholder="1.85", label_visibility="collapsed")
 st.sidebar.caption("Default: ABS/DISER national average. Enter your local price for accuracy.")
 
-st.sidebar.divider()
 ctrl_label(ICO_BOLT, "Electricity Price (AUD/kWh)")
-elec_price = st.sidebar.number_input("Electricity Price (AUD/kWh)", value=0.30, step=0.01, label_visibility="collapsed")
+elec_price = st.sidebar.number_input("Electricity Price (AUD/kWh)", value=0.30, step=0.01, placeholder="0.30", label_visibility="collapsed")
 st.sidebar.caption("Default: AEMO national average. Enter your plan's rate for accuracy.")
 
 # ── Card Selectors ─────────────────────────────────────────────────────────────
@@ -568,12 +575,10 @@ pct_saving = (savings / curr_ann * 100) if curr_ann > 0 else 0
 ann_dist_display = (f"{ann_miles:,.0f}" + " mi.") if unit == "mi." else (f"{ann_km:,.0f}" + " km.")
 
 # ── Hero ───────────────────────────────────────────────────────────────────────
-segment_note_html = ""
-if mode == "EV":
-    segment_note_html = (
-        "<br><strong>Segment note:</strong> For accurate comparisons, use vehicles of the same segment "
-        "(e.g. small hatch vs. small hatch). Mixing segments will produce misleading results."
-    )
+segment_note_html = (
+    "<br><strong>Segment note:</strong> For accurate comparisons, use vehicles of the same segment "
+    "(e.g. small hatch vs. small hatch). Mixing segments will produce misleading results."
+)
 
 disclaimer_text = (
     '<strong>General Estimate Only.</strong> This calculator provides indicative figures and does not '
