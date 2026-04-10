@@ -179,6 +179,13 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span { color:white!important; }
 [data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-child { display:none!important; }
 
+/* Force all vehicle radio containers to full width so ICE and BYD align */
+[data-testid="stMain"] div[data-testid="stRadio"] {
+    width:100%!important; box-sizing:border-box!important;
+}
+[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] {
+    width:100%!important; box-sizing:border-box!important;
+}
 /* 4-card grids (ICE & PHEV): 4 columns, 1 row */
 [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child) {
     display:grid!important; grid-template-columns:repeat(4,1fr)!important; gap:10px!important;
