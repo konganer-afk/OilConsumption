@@ -179,9 +179,13 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span { color:white!important; }
 [data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-child { display:none!important; }
 
-/* Main vehicle cards */
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] {
-    display:grid!important; grid-template-columns:1fr 1fr!important; gap:10px!important;
+/* 4-card grids (ICE & PHEV): 4 columns, 1 row */
+[data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child) {
+    display:grid!important; grid-template-columns:repeat(4,1fr)!important; gap:10px!important;
+}
+/* 6-card grids (BYD EV): 3 columns, 2 rows */
+[data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(6):last-child) {
+    display:grid!important; grid-template-columns:repeat(3,1fr)!important; gap:10px!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
     background:white!important; border:1.5px solid #e2eaf4!important;
@@ -326,6 +330,9 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
     box-shadow:0 4px 16px rgba(41,181,232,0.2)!important;
 }
 
+/* Hide Streamlit heading anchor icons */
+h1 a[href], h2 a[href], h3 a[href], h4 a[href] { display:none!important; }
+
 /* ── DARK MODE OVERRIDES ──────────────────────────────────────────────────── */
 [data-theme="dark"] h1, [data-theme="dark"] h2,
 [data-theme="dark"] h3, [data-theme="dark"] h4 { color:#e2e8f0!important; }
@@ -411,6 +418,31 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 [data-theme="dark"] .assumptions-section table th { color:#c8daf0!important; border-color:#1e2d45!important; }
 [data-theme="dark"] .assumptions-section table td { color:#c8daf0!important; border-color:#1e2d45!important; background:#141e30!important; }
 [data-theme="dark"] .assumptions-section table tr:nth-child(even) td { background:#1a2740!important; }
+
+/* ── MOBILE RESPONSIVE ───────────────────────────────────────────────────── */
+@media (max-width: 640px) {
+    /* Hero: shrink the giant savings number so it fits on one line */
+    .flash_val { font-size: clamp(2.4rem, 11vw, 4rem) !important; letter-spacing: -2px !important; }
+    .flash_cite { font-size: 1.0rem !important; }
+    .flash_label { letter-spacing: 4px !important; font-size: 0.82rem !important; }
+    .flashy-result { padding: 28px 20px !important; }
+    .flash_number_row { gap: 8px !important; }
+
+    /* Vehicle cards: collapse 4-col ICE to 2-col */
+    [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child) {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+    /* Vehicle cards: collapse 3-col BYD EV to 2-col */
+    [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(6):last-child) {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+
+    /* Metric cards: reduce font size slightly */
+    .metric-value, .metric-value-green { font-size: 1.4rem !important; }
+
+    /* Block container: tighten side padding */
+    .block-container { padding-left: 1rem !important; padding-right: 1rem !important; }
+}
 
 </style>
 """, unsafe_allow_html=True)
@@ -514,46 +546,43 @@ elec_price = st.sidebar.number_input("Electricity Price (AUD/kWh)", value=0.30, 
 st.sidebar.caption("Default: AEMO national average. Enter your plan's rate for accuracy.")
 
 # ── Card Selectors ─────────────────────────────────────────────────────────────
-col_ice, col_byd = st.columns(2)
 
-with col_ice:
-    st.markdown('<p class="segment-header">' + SVG_CAR + ' Current ICE Segment</p>', unsafe_allow_html=True)
-    ice_card_keys = list(ICE_SEGMENTS.keys())
-    ice_options = [
-        "**" + k + "**\n\n" + str(v["l100"]) + " L/100km\n\n[" + v["cite"] + "]"
-        for k, v in ICE_SEGMENTS.items()
+st.markdown('<p class="segment-header">' + SVG_CAR + ' Current ICE Segment</p>', unsafe_allow_html=True)
+ice_card_keys = list(ICE_SEGMENTS.keys())
+ice_options = [
+    "**" + k + "**\n\n" + str(v["l100"]) + " L/100km\n\n[" + v["cite"] + "]"
+    for k, v in ICE_SEGMENTS.items()
+]
+ice_sel = st.radio("ice_seg", ice_options, index=2, label_visibility="collapsed", key="ice_radio")
+ice_idx = ice_options.index(ice_sel)
+selected_ice_card = ice_card_keys[ice_idx]
+ice_data = ICE_SEGMENTS[selected_ice_card]
+ice_name = ice_data["name"]
+ice_l100 = ice_data["l100"]
+ice_cite = ice_data["cite"]
+
+if mode == "PHEV":
+    st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD PHEV Model</p>', unsafe_allow_html=True)
+    byd_card_keys = list(BYD_PHEV_MODELS.keys())
+    byd_options = [
+        "**" + k + "**\n\n" + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km\n\n[" + v["cite"] + "]"
+        for k, v in BYD_PHEV_MODELS.items()
     ]
-    ice_sel = st.radio("ice_seg", ice_options, index=2, label_visibility="collapsed", key="ice_radio")
-    ice_idx = ice_options.index(ice_sel)
-    selected_ice_card = ice_card_keys[ice_idx]
-    ice_data = ICE_SEGMENTS[selected_ice_card]
-    ice_name = ice_data["name"]       # title case — used everywhere except card
-    ice_l100 = ice_data["l100"]
-    ice_cite = ice_data["cite"]
-
-with col_byd:
-    if mode == "PHEV":
-        st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD PHEV Model</p>', unsafe_allow_html=True)
-        byd_card_keys = list(BYD_PHEV_MODELS.keys())
-        byd_options = [
-            "**" + k + "**\n\n" + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km\n\n[" + v["cite"] + "]"
-            for k, v in BYD_PHEV_MODELS.items()
-        ]
-        byd_sel = st.radio("byd_phev", byd_options, index=0, label_visibility="collapsed", key="phev_radio")
-        byd_idx = byd_options.index(byd_sel)
-        selected_byd_card = byd_card_keys[byd_idx]
-        byd_data = BYD_PHEV_MODELS[selected_byd_card]
-    else:
-        st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD EV Model</p>', unsafe_allow_html=True)
-        byd_card_keys = list(BYD_EV_MODELS.keys())
-        byd_options = [
-            "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + "\n\n[" + v["cite"] + "]"
-            for k, v in BYD_EV_MODELS.items()
-        ]
-        byd_sel = st.radio("byd_ev", byd_options, index=0, label_visibility="collapsed", key="ev_radio")
-        byd_idx = byd_options.index(byd_sel)
-        selected_byd_card = byd_card_keys[byd_idx]
-        byd_data = BYD_EV_MODELS[selected_byd_card]
+    byd_sel = st.radio("byd_phev", byd_options, index=0, label_visibility="collapsed", key="phev_radio")
+    byd_idx = byd_options.index(byd_sel)
+    selected_byd_card = byd_card_keys[byd_idx]
+    byd_data = BYD_PHEV_MODELS[selected_byd_card]
+else:
+    st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD EV Model</p>', unsafe_allow_html=True)
+    byd_card_keys = list(BYD_EV_MODELS.keys())
+    byd_options = [
+        "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + "\n\n[" + v["cite"] + "]"
+        for k, v in BYD_EV_MODELS.items()
+    ]
+    byd_sel = st.radio("byd_ev", byd_options, index=0, label_visibility="collapsed", key="ev_radio")
+    byd_idx = byd_options.index(byd_sel)
+    selected_byd_card = byd_card_keys[byd_idx]
+    byd_data = BYD_EV_MODELS[selected_byd_card]
 
 byd_name   = byd_data["name"]           # title case — used everywhere except card
 byd_val    = byd_data["val"]
@@ -869,7 +898,7 @@ if mode == "EV":
     )
 
 assumptions_html = (
-    '<div class="assumptions-section">'
+    '<div class="assumptions-section" id="citation-table">'
     '<p class="assumptions-title">Assumptions &amp; Data Sources</p>'
     '<p class="assumptions-desc">All figures are indicative estimates. This tool is classified as a <em>Generic Calculator</em> '
     'and does not constitute financial, legal, or automotive advice. Results assume consistent driving behaviour '
