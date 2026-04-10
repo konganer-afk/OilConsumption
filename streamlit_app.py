@@ -69,13 +69,13 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 /* Sidebar "Comparison Mode" label */
 [data-testid="stSidebar"] p:has(+ div [data-testid="stHorizontalBlock"]) {
     font-size:0.7rem!important; font-weight:700!important; letter-spacing:2px!important;
-    text-transform:uppercase!important; color:#8899aa!important; margin-bottom:6px!important;
+    text-transform:uppercase!important; color:#6d7a88!important; margin-bottom:6px!important;
 }
 
 /* Sidebar control labels with icons */
 .ctrl-label {
     font-size:0.78rem!important; font-weight:600!important;
-    color:#556!important; display:flex!important; align-items:center!important;
+    color:#444452!important; display:flex!important; align-items:center!important;
     gap:7px!important; margin:12px 0 3px!important; padding:0!important; line-height:1.4!important;
     letter-spacing:0.2px!important;
 }
@@ -123,7 +123,7 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 
 /* Controls section header */
 [data-testid="stSidebar"] strong { font-size:0.68rem!important; font-weight:800!important;
-    text-transform:uppercase!important; letter-spacing:3px!important; color:#aab!important; }
+    text-transform:uppercase!important; letter-spacing:3px!important; color:#888896!important; }
 
 /* Comparison mode toggle buttons */
 [data-testid="stSidebar"] button[kind="primary"] {
@@ -216,7 +216,7 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
     font-size:0.88rem!important; font-weight:700!important; color:#1a1a2e!important;
 }
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:nth-child(2) {
-    font-size:0.72rem!important; color:#7788aa!important;
+    font-size:0.72rem!important; color:#5f6d88!important;
 }
 /* Citation superscript paragraph */
 [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:nth-child(3) {
@@ -263,7 +263,7 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 [data-theme="dark"] .stVegaLiteChart svg text { fill:#a8c0d8!important; }
 [data-theme="dark"] .stVegaLiteChart svg .role-axis .grid line { stroke:rgba(80,110,150,0.35)!important; }
 
-.segment-header { font-size:0.66rem; font-weight:800; letter-spacing:3px; color:#99aabb;
+.segment-header { font-size:0.66rem; font-weight:800; letter-spacing:3px; color:#7a8896;
     text-transform:uppercase; margin:0.5rem 0 0.8rem; display:flex; align-items:center; gap:6px; }
 
 /* Section divider */
@@ -288,10 +288,10 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
     transition:transform 0.18s ease, box-shadow 0.18s ease;
 }
 .metric-card-green:hover { transform:translateY(-2px); box-shadow:0 6px 20px rgba(34,197,94,0.15); }
-.metric-label { font-size:0.78rem; color:#778899; margin:0 0 4px; font-weight:500; letter-spacing:0.2px; }
+.metric-label { font-size:0.78rem; color:#5f6d7a; margin:0 0 4px; font-weight:500; letter-spacing:0.2px; }
 .metric-value { font-size:1.8rem; font-weight:800; color:#1a1a2e; margin:0; letter-spacing:-1px; }
 .metric-value-green { font-size:1.8rem; font-weight:800; color:#137333; margin:0; letter-spacing:-1px; }
-.metric-sub { font-size:0.71rem; color:#aab; margin:3px 0 0; }
+.metric-sub { font-size:0.71rem; color:#888896; margin:3px 0 0; }
 .metric-sub-green { font-size:0.71rem; color:#22a355; margin:3px 0 0; }
 .metric-delta { font-size:0.82rem; color:#e05050; margin:2px 0 0; font-weight:700; }
 .cite-tag { font-size:0.6rem; color:#1a7fa3; font-weight:700; vertical-align:super; margin-left:2px; }
@@ -303,10 +303,10 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 }
 .assumptions-title { font-size:0.68rem; font-weight:800; color:#1a7fa3;
     text-transform:uppercase; letter-spacing:3px; margin:0 0 10px; }
-.assumptions-desc { font-size:0.82rem; color:#667; margin:0 0 16px; line-height:1.7; }
+.assumptions-desc { font-size:0.82rem; color:#52525f; margin:0 0 16px; line-height:1.7; }
 .cite-legend { margin-top:16px; padding-top:14px; border-top:1px solid #e8eff8; }
-.cite-legend-title { font-size:0.66rem; font-weight:800; color:#aab; text-transform:uppercase; letter-spacing:3px; margin:0 0 8px; }
-.cite-row { font-size:0.78rem; color:#556; margin:4px 0; line-height:1.5; }
+.cite-legend-title { font-size:0.66rem; font-weight:800; color:#888896; text-transform:uppercase; letter-spacing:3px; margin:0 0 8px; }
+.cite-row { font-size:0.78rem; color:#444452; margin:4px 0; line-height:1.5; }
 .cite-key { font-weight:700; color:#1a7fa3; min-width:40px; display:inline-block; }
 .assumptions-section table td, .assumptions-section table th { color:#1a1a2e!important; }
 
@@ -753,7 +753,7 @@ with col_chart:
         "Vehicle": [ice_name, byd_name],
         "Annual Cost (AUD)": [round(curr_ann, 2), round(new_ann, 2)]
     })
-    LABEL_CLR = "#7a90a8"
+    LABEL_CLR = "#627386"
     GRID_CLR  = "#dce8f5"
     chart = alt.Chart(chart_df).mark_bar(
         cornerRadiusTopLeft=8, cornerRadiusTopRight=8, size=72
@@ -778,7 +778,10 @@ with col_chart:
             alt.Tooltip("Vehicle:N", title="Vehicle"),
             alt.Tooltip("Annual Cost (AUD):Q", title="Annual Cost (AUD)", format="$,.2f")
         ]
-    ).properties(height=481, background="transparent")
+    ).properties(
+        height=481, background="transparent",
+        padding={"left": 8, "right": 36, "top": 8, "bottom": 8}
+    )
     st.altair_chart(chart, use_container_width=True, theme=None)
 
 with col_stats:
