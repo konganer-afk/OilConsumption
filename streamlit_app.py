@@ -439,18 +439,22 @@ h1 a[href], h2 a[href], h3 a[href], h4 a[href] { display:none!important; }
     .flash_label { letter-spacing: 4px !important; font-size: 0.82rem !important; }
     .flashy-result { padding: 28px 20px !important; }
 
-    /* Vehicle cards: collapse 4-col ICE to 2-col */
-    [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child) {
-        grid-template-columns: repeat(2, 1fr) !important;
-    }
-    /* Vehicle cards: collapse 3-col BYD EV to 2-col */
+    /* Both vehicle grids: 2-col, full width, uniform 96px rows */
+    [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child),
     [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(6):last-child) {
         grid-template-columns: repeat(2, 1fr) !important;
+        grid-auto-rows: 96px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
+        gap: 10px !important;
     }
-    /* Enforce uniform card height across all vehicle grids on mobile */
+    /* Clip cards to the row height so wrapping text can't push them taller */
     [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
-        min-height: 96px !important;
         height: 96px !important;
+        min-height: 96px !important;
+        max-height: 96px !important;
+        overflow: hidden !important;
+        box-sizing: border-box !important;
     }
 
     /* Metric cards: reduce font size slightly */
