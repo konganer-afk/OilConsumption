@@ -421,12 +421,23 @@ h1 a[href], h2 a[href], h3 a[href], h4 a[href] { display:none!important; }
 
 /* ── MOBILE RESPONSIVE ───────────────────────────────────────────────────── */
 @media (max-width: 640px) {
-    /* Hero: shrink the giant savings number so it fits on one line */
-    .flash_val { font-size: clamp(2.4rem, 11vw, 4rem) !important; letter-spacing: -2px !important; }
+    /* Hero: stack number + side text vertically so number gets full width */
+    .flash_number_row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 4px !important;
+    }
+    /* Side text: show inline when stacked below number */
+    .flash_side {
+        flex-direction: row !important;
+        gap: 10px !important;
+        opacity: 0.7 !important;
+    }
+    /* Shrink the savings number — full width now so just needs vw scaling */
+    .flash_val { font-size: clamp(2.8rem, 13vw, 5rem) !important; letter-spacing: -2px !important; }
     .flash_cite { font-size: 1.0rem !important; }
     .flash_label { letter-spacing: 4px !important; font-size: 0.82rem !important; }
     .flashy-result { padding: 28px 20px !important; }
-    .flash_number_row { gap: 8px !important; }
 
     /* Vehicle cards: collapse 4-col ICE to 2-col */
     [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child) {
