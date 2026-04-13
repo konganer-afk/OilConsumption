@@ -17,10 +17,11 @@ SVG_BOLT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="
 #   "cite"  = citation reference
 
 ICE_SEGMENTS = {
-    "AVERAGE HATCHBACK":    {"name": "Average Hatchback",    "l100": 6.2, "cite": "I1"},
-    "AVERAGE SEDAN":        {"name": "Average Sedan",        "l100": 6.8, "cite": "I2"},
-    "AVERAGE SMALL SUV":    {"name": "Average Small SUV",    "l100": 7.5, "cite": "I3"},
-    "AVERAGE UTE (DIESEL)": {"name": "Average Ute (Diesel)", "l100": 9.5, "cite": "I4"},
+    "AVERAGE LIGHT CAR":  {"name": "Average Light Car",  "l100": 5.9, "cite": "I1"},
+    "AVERAGE SMALL CAR":  {"name": "Average Small Car",  "l100": 7.5, "cite": "I2"},
+    "AVERAGE MEDIUM CAR": {"name": "Average Medium Car", "l100": 7.9, "cite": "I3"},
+    "AVERAGE SMALL SUV":  {"name": "Average Small SUV",  "l100": 7.3, "cite": "I4"},
+    "AVERAGE UTE":        {"name": "Average Ute",        "l100": 9.3, "cite": "I5"},
 }
 
 # kWh/100km from GVG EnergyConsumptionWhkm / 10
@@ -623,7 +624,7 @@ ice_options = [
     "**" + k + "**\n\n" + str(v["l100"]) + " L/100km\n\n[" + v["cite"] + "]"
     for k, v in ICE_SEGMENTS.items()
 ]
-ice_sel = st.radio("ice_seg", ice_options, index=2, label_visibility="collapsed", key="ice_radio")
+ice_sel = st.radio("ice_seg", ice_options, index=3, label_visibility="collapsed", key="ice_radio")
 ice_idx = ice_options.index(ice_sel)
 selected_ice_card = ice_card_keys[ice_idx]
 ice_data = ICE_SEGMENTS[selected_ice_card]
@@ -771,7 +772,12 @@ def generate_pdf():
         "[P1] Fuel price - user-set or ABS/DISER avg.   [P2] Electricity price - user-set or AEMO avg.",
         "[C1] ICE Annual = (km/100) x L/100km x Fuel Price   [C2] Annual km = Daily km x Days/wk x 52",
         "[S1] BYD Annual = (km/100) x Consumption x Energy Price   [S2] Monthly Saving = C1/12 - S1/12",
-        "[V1] % Saving = (ICE Annual - BYD Annual) / ICE Annual x 100   [I1-I4] ICE averages - GVG",
+        "[V1] % Saving = (ICE Annual - BYD Annual) / ICE Annual x 100",
+        "[I1] Average Light Car: 5.9 L/100km (WLTP) - Electric Vehicle Council, Lifecycle Emissions Calculator Explainer, Table 1, Nov 2023",
+        "[I2] Average Small Car: 7.5 L/100km (WLTP) - Electric Vehicle Council, Lifecycle Emissions Calculator Explainer, Table 1, Nov 2023",
+        "[I3] Average Medium Car: 7.9 L/100km (WLTP) - Electric Vehicle Council, Lifecycle Emissions Calculator Explainer, Table 1, Nov 2023",
+        "[I4] Average Small SUV: 7.3 L/100km (WLTP) - Electric Vehicle Council, Lifecycle Emissions Calculator Explainer, Table 1, Nov 2023",
+        "[I5] Average Ute: 9.3 L/100km (WLTP) - Electric Vehicle Council, Lifecycle Emissions Calculator Explainer, Table 1, Nov 2023",
     ]
     if mode == "PHEV":
         cite_lines.append("[S1] PHEV = km x (L/100km/100 x Fuel$ + Wh/km/1000 x Elec$)")
@@ -1012,10 +1018,11 @@ assumptions_html = (
     '<p class="cite-row"><span class="cite-key"><sup>[S1]</sup></span> BYD Monthly Cost = (Annual km &divide; 100) &times; BYD Consumption &times; Energy Price &divide; 12</p>'
     '<p class="cite-row"><span class="cite-key"><sup>[S2]</sup></span> Monthly Saving = ICE Monthly <sup>[C1]</sup> &minus; BYD Monthly <sup>[S1]</sup></p>'
     '<p class="cite-row"><span class="cite-key"><sup>[V1]</sup></span> % Value = (ICE Annual &minus; BYD Annual) &divide; ICE Annual &times; 100</p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[I1]</sup></span> Average Hatchback: 6.2 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[I2]</sup></span> Average Sedan: 6.8 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[I3]</sup></span> Average Small SUV: 7.5 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
-    '<p class="cite-row"><span class="cite-key"><sup>[I4]</sup></span> Average Ute (Diesel): 9.5 L/100km &mdash; <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[I1]</sup></span> Average Light Car: 5.9 L/100km (WLTP) &mdash; <a href="https://electricvehiclecouncil.com.au/wp-content/uploads/2023/11/EVC-Lifecycle-Emissions-Calculator-Explainer.pdf" target="_blank">Electric Vehicle Council, <em>Lifecycle Emissions Calculator Explainer</em>, Table 1, Nov 2023</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[I2]</sup></span> Average Small Car: 7.5 L/100km (WLTP) &mdash; <a href="https://electricvehiclecouncil.com.au/wp-content/uploads/2023/11/EVC-Lifecycle-Emissions-Calculator-Explainer.pdf" target="_blank">Electric Vehicle Council, <em>Lifecycle Emissions Calculator Explainer</em>, Table 1, Nov 2023</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[I3]</sup></span> Average Medium Car: 7.9 L/100km (WLTP) &mdash; <a href="https://electricvehiclecouncil.com.au/wp-content/uploads/2023/11/EVC-Lifecycle-Emissions-Calculator-Explainer.pdf" target="_blank">Electric Vehicle Council, <em>Lifecycle Emissions Calculator Explainer</em>, Table 1, Nov 2023</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[I4]</sup></span> Average Small SUV: 7.3 L/100km (WLTP) &mdash; <a href="https://electricvehiclecouncil.com.au/wp-content/uploads/2023/11/EVC-Lifecycle-Emissions-Calculator-Explainer.pdf" target="_blank">Electric Vehicle Council, <em>Lifecycle Emissions Calculator Explainer</em>, Table 1, Nov 2023</a></p>'
+    '<p class="cite-row"><span class="cite-key"><sup>[I5]</sup></span> Average Ute: 9.3 L/100km (WLTP) &mdash; <a href="https://electricvehiclecouncil.com.au/wp-content/uploads/2023/11/EVC-Lifecycle-Emissions-Calculator-Explainer.pdf" target="_blank">Electric Vehicle Council, <em>Lifecycle Emissions Calculator Explainer</em>, Table 1, Nov 2023</a></p>'
     + d_cite_rows +
     '</div>'
     '<p style="font-size:0.75rem;color:#999;margin:12px 0 0;">'
