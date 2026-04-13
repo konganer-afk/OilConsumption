@@ -187,11 +187,9 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 [data-testid="stMain"] [data-testid="stRadio"] > div[role="radiogroup"] {
     width:100%!important; max-width:100%!important; box-sizing:border-box!important;
 }
-/* 4-card grids (ICE & PHEV): 4 columns, 1 row */
-[data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child) {
-    display:grid!important; grid-template-columns:repeat(4,1fr)!important; gap:10px!important;
-}
-/* 6-card grids (BYD EV): 3 columns, 2 rows */
+/* All vehicle card grids: unified 3-column layout */
+[data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child),
+[data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(5):last-child),
 [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(6):last-child) {
     display:grid!important; grid-template-columns:repeat(3,1fr)!important; gap:10px!important;
 }
@@ -490,8 +488,9 @@ h1 a[href], h2 a[href], h3 a[href], h4 a[href] { display:none!important; }
     .flash_label { letter-spacing: 4px !important; font-size: 0.82rem !important; }
     .flashy-result { padding: 28px 20px !important; }
 
-    /* Both vehicle grids: 2-col, full width, uniform 96px rows */
+    /* All vehicle grids: 2-col on mobile, full width, uniform 96px rows */
     [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child),
+    [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(5):last-child),
     [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(6):last-child) {
         grid-template-columns: repeat(2, 1fr) !important;
         grid-auto-rows: 96px !important;
