@@ -373,6 +373,28 @@ h1 a[href], h2 a[href], h3 a[href], h4 a[href] { display:none!important; }
     background:#e8192c!important; color:#ffffff!important;
     box-shadow:0 0 8px rgba(232,25,44,0.55)!important; border-color:#e8192c!important;
 }
+/* Also target system dark mode via prefers-color-scheme (macOS system dark mode) */
+@media (prefers-color-scheme: dark) {
+    [data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] > div {
+        background:#1a2740!important; border-color:#2d4060!important;
+    }
+    [data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] > div:hover {
+        border-color:#e8192c!important; box-shadow:0 0 0 2px rgba(232,25,44,0.35)!important;
+    }
+    [data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] input {
+        background:#1a2740!important; color:#c8daf0!important;
+    }
+    [data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] button {
+        background:#1a2740!important; color:#c8daf0!important; border-color:#2d4060!important;
+    }
+    [data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] button:hover {
+        background:#e8192c!important; color:#ffffff!important;
+        box-shadow:0 0 8px rgba(232,25,44,0.55)!important; border-color:#e8192c!important;
+    }
+    [data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="stNumberInput"] input {
+        background:#1a2740!important; color:#c8daf0!important;
+    }
+}
 /* Dark mode: slider companion inputs (inside stHorizontalBlock) */
 [data-theme="dark"] [data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="stNumberInput"] input {
     background:#1a2740!important; color:#c8daf0!important;
