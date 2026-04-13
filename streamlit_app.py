@@ -356,6 +356,27 @@ h1 a[href], h2 a[href], h3 a[href], h4 a[href] { display:none!important; }
 [data-theme="dark"] [data-testid="stNumberInput"] > div {
     background:#1a2740!important; border-color:#2d4060!important;
 }
+/* Dark mode: override the white-bg rule applied to fuel/electricity inputs */
+[data-theme="dark"] [data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] > div {
+    background:#1a2740!important; border-color:#2d4060!important;
+}
+[data-theme="dark"] [data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] > div:hover {
+    border-color:#e8192c!important; box-shadow:0 0 0 2px rgba(232,25,44,0.35)!important;
+}
+[data-theme="dark"] [data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] input {
+    background:#1a2740!important; color:#c8daf0!important;
+}
+[data-theme="dark"] [data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] button {
+    background:#1a2740!important; color:#c8daf0!important; border-color:#2d4060!important;
+}
+[data-theme="dark"] [data-testid="stSidebar"] > div > div > div [data-testid="stNumberInput"] button:hover {
+    background:#e8192c!important; color:#ffffff!important;
+    box-shadow:0 0 8px rgba(232,25,44,0.55)!important; border-color:#e8192c!important;
+}
+/* Dark mode: slider companion inputs (inside stHorizontalBlock) */
+[data-theme="dark"] [data-testid="stSidebar"] [data-testid="stHorizontalBlock"] [data-testid="stNumberInput"] input {
+    background:#1a2740!important; color:#c8daf0!important;
+}
 [data-theme="dark"] .stApp { background:linear-gradient(160deg,#0d1421 0%,#111827 100%)!important; }
 [data-theme="dark"] [data-testid="stSidebar"] > div:first-child { background:linear-gradient(180deg,#131c2e 0%,#0f1826 100%)!important; }
 [data-theme="dark"] .sidebar-title {
