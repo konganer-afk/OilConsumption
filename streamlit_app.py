@@ -34,12 +34,19 @@ BYD_EV_MODELS = {
     "BYD SEALION 7": {"name": "BYD Sealion 7", "val": 17.9, "unit": "kWh/100km", "cite": "D6"},
 }
 
+# PHEV calculation uses BOTH fuel AND electricity:
+# new_ann = ann_km * (val/100 * fuelPrice + wh_km/1000 * elecPrice)
+# Wh/km for Seal 6 series derived from: (battery kWh × 1000) ÷ WLTP EV range km
+# Seal 6 PHEVs are ~30% less efficient in EV mode vs pure Seal EV (183–190 vs 138 Wh/km)
+# due to additional ICE weight. Fuel figures at sufficient SOC per official brochure.
 # L/100km (FuelConsumptionCombined) + Wh/km (EnergyConsumptionWhkm) from GVG
 BYD_PHEV_MODELS = {
-    "BYD SEALION 5": {"name": "BYD Sealion 5", "val": 1.2, "unit": "L/100km", "wh_km": 120, "cite": "D1"},
-    "BYD SEALION 6": {"name": "BYD Sealion 6", "val": 1.1, "unit": "L/100km", "wh_km": 169, "cite": "D2"},
-    "BYD SEALION 8": {"name": "BYD Sealion 8", "val": 1.1, "unit": "L/100km", "wh_km": 150, "cite": "D3"},
-    "BYD SHARK 6":   {"name": "BYD Shark 6",   "val": 2.0, "unit": "L/100km", "wh_km": 212, "cite": "D4"},
+    "BYD SEALION 5":      {"name": "BYD Sealion 5",      "val": 1.2, "unit": "L/100km", "wh_km": 120, "cite": "D1"},
+    "BYD SEALION 6":      {"name": "BYD Sealion 6",      "val": 1.1, "unit": "L/100km", "wh_km": 169, "cite": "D2"},
+    "BYD SEALION 8":      {"name": "BYD Sealion 8",      "val": 1.1, "unit": "L/100km", "wh_km": 150, "cite": "D3"},
+    "BYD SHARK 6":        {"name": "BYD Shark 6",        "val": 2.0, "unit": "L/100km", "wh_km": 212, "cite": "D4"},
+    "BYD SEAL 6":         {"name": "BYD Seal 6",         "val": 1.1, "unit": "L/100km", "wh_km": 183, "cite": "D5"},
+    "BYD SEAL 6 TOURING": {"name": "BYD Seal 6 Touring", "val": 0.8, "unit": "L/100km", "wh_km": 190, "cite": "D6"},
 }
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
@@ -919,17 +926,17 @@ with col_stats:
 if mode == "PHEV":
     mode_rows = (
         '<tr>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Fuel Consumption <sup>[' + byd_cite + ']</sup></td>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">' + byd_name + ': <strong>' + str(byd_val) + ' L/100km</strong></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Fuel Consumption</td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">BYD Shark 6: <strong>2.0 L/100km</strong> (example; actual varies by model)</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
         '</tr>'
         '<tr>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Electricity Consumption <sup>[' + byd_cite + ']</sup></td>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">' + byd_name + ': <strong>' + str(byd_wh_km) + ' Wh/km</strong></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Electricity Consumption</td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">BYD Shark 6: <strong>212 Wh/km</strong> (example; actual varies by model)</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
         '</tr>'
         '<tr>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Electricity Price <sup>[P2]</sup></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Electricity Price</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><strong>$' + f"{elec_price:.2f}" + ' AUD/kWh</strong> (user-set; default: AEMO national avg.)</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.aemo.com.au" target="_blank">AEMO</a></td>'
         '</tr>'
@@ -937,12 +944,12 @@ if mode == "PHEV":
 else:
     mode_rows = (
         '<tr>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">EV Consumption <sup>[' + byd_cite + ']</sup></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">EV Consumption</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;">' + byd_name + ': <strong>' + str(byd_val) + ' kWh/100km</strong></td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
         '</tr>'
         '<tr>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Electricity Price <sup>[P2]</sup></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Electricity Price</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><strong>$' + f"{elec_price:.2f}" + ' AUD/kWh</strong> (user-set; default: AEMO national avg.)</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.aemo.com.au" target="_blank">AEMO</a></td>'
         '</tr>'
@@ -957,12 +964,36 @@ if mode == "EV":
             'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
         )
 else:
+    _phev_sources = {
+        "BYD SEAL 6": (
+            "https://bydautomotive.com.au/brochures/BYD-SEAL-6-2026.pdf?v=1",
+            "BYD Automotive AU, Seal 6 Brochure 2026",
+            "Wh/km = (10.08 kWh &times; 1,000) &divide; 55 km WLTP = <strong>183 Wh/km</strong>. "
+            "Fuel: 1.1 L/100km at sufficient SOC per brochure.",
+        ),
+        "BYD SEAL 6 TOURING": (
+            "https://bydautomotive.com.au/brochures/BYD-SEAL-6-TOURING-2026.pdf?v=1",
+            "BYD Automotive AU, Seal 6 Touring Brochure 2026",
+            "Wh/km = (19.00 kWh &times; 1,000) &divide; 100 km WLTP = <strong>190 Wh/km</strong>. "
+            "Fuel: 0.8 L/100km at sufficient SOC per brochure.",
+        ),
+    }
     for i, (k, v) in enumerate(BYD_PHEV_MODELS.items(), 1):
-        d_cite_rows += (
-            '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
-            + v["name"] + ' &mdash; ' + str(v["val"]) + ' L/100km + ' + str(v["wh_km"]) + ' Wh/km. '
-            'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
-        )
+        src = _phev_sources.get(k)
+        if src:
+            src_url, src_name, methodology = src
+            d_cite_rows += (
+                '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
+                + v["name"] + ' &mdash; ' + str(v["val"]) + ' L/100km + ' + str(v["wh_km"]) + ' Wh/km. '
+                'Source: <a href="' + src_url + '" target="_blank">' + src_name + '</a>. '
+                '<em>' + methodology + '</em></p>'
+            )
+        else:
+            d_cite_rows += (
+                '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
+                + v["name"] + ' &mdash; ' + str(v["val"]) + ' L/100km + ' + str(v["wh_km"]) + ' Wh/km. '
+                'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+            )
 
 p2_row = ""
 if mode == "EV":
@@ -986,19 +1017,19 @@ assumptions_html = (
     '</tr></thead>'
     '<tbody>'
     '<tr>'
-    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Annual Distance <sup>[C2]</sup></td>'
+    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Annual Distance</td>'
     '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Daily Commute &times; ' + str(days_per_week) + ' days/week &times; 52 weeks = <strong>' + f"{ann_km:,.0f}" + ' km</strong></td>'
     '<td style="padding:7px 10px;border:1px solid #e0eaf3;">User input</td>'
     '</tr>'
     '<tr>'
-    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Fuel Price <sup>[P1]</sup></td>'
+    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Fuel Price</td>'
     '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><strong>$' + f"{fuel_price:.2f}" + ' AUD/Litre</strong> (user-set; default: ABS/DISER national avg.)</td>'
     '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.abs.gov.au" target="_blank">ABS</a> / <a href="https://www.energy.gov.au" target="_blank">DISER</a></td>'
     '</tr>'
     '<tr>'
-    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">ICE Segment <sup>[' + ice_cite + ']</sup></td>'
+    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">ICE Segment</td>'
     '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><strong>' + ice_name + ': ' + str(ice_l100) + ' L/100km</strong></td>'
-    '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
+    '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://electricvehiclecouncil.com.au/wp-content/uploads/2023/11/EVC-Lifecycle-Emissions-Calculator-Explainer.pdf" target="_blank">Electric Vehicle Council</a></td>'
     '</tr>'
     + mode_rows +
     '<tr>'
