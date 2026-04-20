@@ -926,17 +926,17 @@ with col_stats:
 if mode == "PHEV":
     mode_rows = (
         '<tr>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Fuel Consumption <sup>[' + byd_cite + ']</sup></td>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">' + byd_name + ': <strong>' + str(byd_val) + ' L/100km</strong></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Fuel Consumption</td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">BYD Shark 6: <strong>2.0 L/100km</strong> (example; actual varies by model)</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
         '</tr>'
         '<tr>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Electricity Consumption <sup>[' + byd_cite + ']</sup></td>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">' + byd_name + ': <strong>' + str(byd_wh_km) + ' Wh/km</strong></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">PHEV Electricity Consumption</td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">BYD Shark 6: <strong>212 Wh/km</strong> (example; actual varies by model)</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
         '</tr>'
         '<tr>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Electricity Price <sup>[P2]</sup></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Electricity Price</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><strong>$' + f"{elec_price:.2f}" + ' AUD/kWh</strong> (user-set; default: AEMO national avg.)</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.aemo.com.au" target="_blank">AEMO</a></td>'
         '</tr>'
@@ -944,12 +944,12 @@ if mode == "PHEV":
 else:
     mode_rows = (
         '<tr>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">EV Consumption <sup>[' + byd_cite + ']</sup></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">EV Consumption</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;">' + byd_name + ': <strong>' + str(byd_val) + ' kWh/100km</strong></td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
         '</tr>'
         '<tr>'
-        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Electricity Price <sup>[P2]</sup></td>'
+        '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Electricity Price</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><strong>$' + f"{elec_price:.2f}" + ' AUD/kWh</strong> (user-set; default: AEMO national avg.)</td>'
         '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.aemo.com.au" target="_blank">AEMO</a></td>'
         '</tr>'
@@ -964,11 +964,18 @@ if mode == "EV":
             'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
         )
 else:
+    _phev_sources = {
+        "BYD SEAL 6":         ("https://bydautomotive.com.au/brochures/BYD-SEAL-6-2026.pdf?v=1",
+                               "BYD Automotive AU, Seal 6 Brochure 2026 (Wh/km derived: 10.08 kWh &divide; 55 km WLTP)"),
+        "BYD SEAL 6 TOURING": ("https://bydautomotive.com.au/brochures/BYD-SEAL-6-TOURING-2026.pdf?v=1",
+                               "BYD Automotive AU, Seal 6 Touring Brochure 2026 (Wh/km derived: 19.00 kWh &divide; 100 km WLTP)"),
+    }
     for i, (k, v) in enumerate(BYD_PHEV_MODELS.items(), 1):
+        src_url, src_name = _phev_sources.get(k, ("https://www.greenvehicleguide.gov.au", "Green Vehicle Guide"))
         d_cite_rows += (
             '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
             + v["name"] + ' &mdash; ' + str(v["val"]) + ' L/100km + ' + str(v["wh_km"]) + ' Wh/km. '
-            'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+            'Source: <a href="' + src_url + '" target="_blank">' + src_name + '</a></p>'
         )
 
 p2_row = ""
@@ -993,19 +1000,19 @@ assumptions_html = (
     '</tr></thead>'
     '<tbody>'
     '<tr>'
-    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Annual Distance <sup>[C2]</sup></td>'
+    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Annual Distance</td>'
     '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Daily Commute &times; ' + str(days_per_week) + ' days/week &times; 52 weeks = <strong>' + f"{ann_km:,.0f}" + ' km</strong></td>'
     '<td style="padding:7px 10px;border:1px solid #e0eaf3;">User input</td>'
     '</tr>'
     '<tr>'
-    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Fuel Price <sup>[P1]</sup></td>'
+    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">Fuel Price</td>'
     '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><strong>$' + f"{fuel_price:.2f}" + ' AUD/Litre</strong> (user-set; default: ABS/DISER national avg.)</td>'
     '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.abs.gov.au" target="_blank">ABS</a> / <a href="https://www.energy.gov.au" target="_blank">DISER</a></td>'
     '</tr>'
     '<tr>'
-    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">ICE Segment <sup>[' + ice_cite + ']</sup></td>'
+    '<td style="padding:7px 10px;border:1px solid #e0eaf3;">ICE Segment</td>'
     '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><strong>' + ice_name + ': ' + str(ice_l100) + ' L/100km</strong></td>'
-    '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></td>'
+    '<td style="padding:7px 10px;border:1px solid #e0eaf3;"><a href="https://electricvehiclecouncil.com.au/wp-content/uploads/2023/11/EVC-Lifecycle-Emissions-Calculator-Explainer.pdf" target="_blank">Electric Vehicle Council</a></td>'
     '</tr>'
     + mode_rows +
     '<tr>'
