@@ -34,12 +34,19 @@ BYD_EV_MODELS = {
     "BYD SEALION 7": {"name": "BYD Sealion 7", "val": 17.9, "unit": "kWh/100km", "cite": "D6"},
 }
 
+# PHEV calculation uses BOTH fuel AND electricity:
+# new_ann = ann_km * (val/100 * fuelPrice + wh_km/1000 * elecPrice)
+# Wh/km for Seal 6 series derived from: (battery kWh × 1000) ÷ WLTP EV range km
+# Seal 6 PHEVs are ~30% less efficient in EV mode vs pure Seal EV (183–190 vs 138 Wh/km)
+# due to additional ICE weight. Fuel figures at sufficient SOC per official brochure.
 # L/100km (FuelConsumptionCombined) + Wh/km (EnergyConsumptionWhkm) from GVG
 BYD_PHEV_MODELS = {
-    "BYD SEALION 5": {"name": "BYD Sealion 5", "val": 1.2, "unit": "L/100km", "wh_km": 120, "cite": "D1"},
-    "BYD SEALION 6": {"name": "BYD Sealion 6", "val": 1.1, "unit": "L/100km", "wh_km": 169, "cite": "D2"},
-    "BYD SEALION 8": {"name": "BYD Sealion 8", "val": 1.1, "unit": "L/100km", "wh_km": 150, "cite": "D3"},
-    "BYD SHARK 6":   {"name": "BYD Shark 6",   "val": 2.0, "unit": "L/100km", "wh_km": 212, "cite": "D4"},
+    "BYD SEALION 5":      {"name": "BYD Sealion 5",      "val": 1.2, "unit": "L/100km", "wh_km": 120, "cite": "D1"},
+    "BYD SEALION 6":      {"name": "BYD Sealion 6",      "val": 1.1, "unit": "L/100km", "wh_km": 169, "cite": "D2"},
+    "BYD SEALION 8":      {"name": "BYD Sealion 8",      "val": 1.1, "unit": "L/100km", "wh_km": 150, "cite": "D3"},
+    "BYD SHARK 6":        {"name": "BYD Shark 6",        "val": 2.0, "unit": "L/100km", "wh_km": 212, "cite": "D4"},
+    "BYD SEAL 6":         {"name": "BYD Seal 6",         "val": 1.1, "unit": "L/100km", "wh_km": 183, "cite": "D5"},
+    "BYD SEAL 6 TOURING": {"name": "BYD Seal 6 Touring", "val": 0.8, "unit": "L/100km", "wh_km": 190, "cite": "D6"},
 }
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
