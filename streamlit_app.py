@@ -965,18 +965,35 @@ if mode == "EV":
         )
 else:
     _phev_sources = {
-        "BYD SEAL 6":         ("https://bydautomotive.com.au/brochures/BYD-SEAL-6-2026.pdf?v=1",
-                               "BYD Automotive AU, Seal 6 Brochure 2026 (Wh/km derived: 10.08 kWh &divide; 55 km WLTP)"),
-        "BYD SEAL 6 TOURING": ("https://bydautomotive.com.au/brochures/BYD-SEAL-6-TOURING-2026.pdf?v=1",
-                               "BYD Automotive AU, Seal 6 Touring Brochure 2026 (Wh/km derived: 19.00 kWh &divide; 100 km WLTP)"),
+        "BYD SEAL 6": (
+            "https://bydautomotive.com.au/brochures/BYD-SEAL-6-2026.pdf?v=1",
+            "BYD Automotive AU, Seal 6 Brochure 2026",
+            "Wh/km = (10.08 kWh &times; 1,000) &divide; 55 km WLTP = <strong>183 Wh/km</strong>. "
+            "Fuel: 1.1 L/100km at sufficient SOC per brochure.",
+        ),
+        "BYD SEAL 6 TOURING": (
+            "https://bydautomotive.com.au/brochures/BYD-SEAL-6-TOURING-2026.pdf?v=1",
+            "BYD Automotive AU, Seal 6 Touring Brochure 2026",
+            "Wh/km = (19.00 kWh &times; 1,000) &divide; 100 km WLTP = <strong>190 Wh/km</strong>. "
+            "Fuel: 0.8 L/100km at sufficient SOC per brochure.",
+        ),
     }
     for i, (k, v) in enumerate(BYD_PHEV_MODELS.items(), 1):
-        src_url, src_name = _phev_sources.get(k, ("https://www.greenvehicleguide.gov.au", "Green Vehicle Guide"))
-        d_cite_rows += (
-            '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
-            + v["name"] + ' &mdash; ' + str(v["val"]) + ' L/100km + ' + str(v["wh_km"]) + ' Wh/km. '
-            'Source: <a href="' + src_url + '" target="_blank">' + src_name + '</a></p>'
-        )
+        src = _phev_sources.get(k)
+        if src:
+            src_url, src_name, methodology = src
+            d_cite_rows += (
+                '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
+                + v["name"] + ' &mdash; ' + str(v["val"]) + ' L/100km + ' + str(v["wh_km"]) + ' Wh/km. '
+                'Source: <a href="' + src_url + '" target="_blank">' + src_name + '</a>. '
+                '<em>' + methodology + '</em></p>'
+            )
+        else:
+            d_cite_rows += (
+                '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
+                + v["name"] + ' &mdash; ' + str(v["val"]) + ' L/100km + ' + str(v["wh_km"]) + ' Wh/km. '
+                'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
+            )
 
 p2_row = ""
 if mode == "EV":
