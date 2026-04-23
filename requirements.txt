@@ -2,3 +2,5 @@ streamlit
 pandas
 fpdf2
 altair
+gspread
+google-auth
