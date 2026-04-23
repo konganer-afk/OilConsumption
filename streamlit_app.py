@@ -24,6 +24,11 @@ def log_event(event: str):
 
 st.set_page_config(page_title="BYD Savings Calculator", page_icon="⛽", layout="wide")
 
+# Log one visit per session (not on every rerun)
+if "visit_logged" not in st.session_state:
+    st.session_state["visit_logged"] = True
+    log_event("app_visit")
+
 # ── SVG Icons ──────────────────────────────────────────────────────────────────
 SVG_CAR  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a7fa3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M5 17H3a2 2 0 0 1-2-2v-4l2.38-4.76A2 2 0 0 1 5.17 5h13.66a2 2 0 0 1 1.79 1.1L23 11v4a2 2 0 0 1-2 2h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>'
 SVG_BOLT = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a7fa3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>'
