@@ -2,6 +2,25 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 from fpdf import FPDF
+import gspread
+from google.oauth2.service_account import Credentials
+from datetime import datetime
+
+
+def log_event(event: str):
+    try:
+        creds = Credentials.from_service_account_info(
+            st.secrets["gcp_service_account"],
+            scopes=[
+                "https://www.googleapis.com/auth/spreadsheets",
+                "https://www.googleapis.com/auth/drive"
+            ]
+        )
+        client = gspread.authorize(creds)
+        sheet = client.open_by_key("1aZNzuE4-B03ioqz7LmvcikuIwkZgpBGBuJTXgQOMHVA").sheet1
+        sheet.append_row([datetime.utcnow().isoformat(), event])
+    except Exception:
+        pass
 
 st.set_page_config(page_title="BYD Savings Calculator", page_icon="⛽", layout="wide")
 
@@ -846,12 +865,13 @@ st.markdown(hero_html, unsafe_allow_html=True)
 
 # ── Download Button — placed near the hero ─────────────────────────────────────
 pdf_bytes = generate_pdf()
-st.download_button(
-    label="Download as PDF",
+if st.download_button(
+    label="Download PDF",
     data=pdf_bytes,
-    file_name="BYD_Savings_Summary.pdf",
+    file_name="byd_savings.pdf",
     mime="application/pdf"
-)
+):
+    log_event("pdf_download")
 
 st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
