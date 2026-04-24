@@ -3,11 +3,12 @@ import pandas as pd
 import altair as alt
 from fpdf import FPDF
 import gspread
+import uuid
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 
 
-def log_event(event: str):
+def log_event(event: str, session_id: str):
     try:
         creds = Credentials.from_service_account_info(
             st.secrets["gcp_service_account"],
@@ -18,16 +19,17 @@ def log_event(event: str):
         )
         client = gspread.authorize(creds)
         sheet = client.open_by_key("1aZNzuE4-B03ioqz7LmvcikuIwkZgpBGBuJTXgQOMHVA").sheet1
-        sheet.append_row([datetime.utcnow().isoformat(), event])
+        sheet.append_row([datetime.utcnow().isoformat(), event, session_id])
     except Exception:
         pass
 
 st.set_page_config(page_title="BYD Savings Calculator", page_icon="⛽", layout="wide")
 
 # Log one visit per session (not on every rerun)
-if "visit_logged" not in st.session_state:
-    st.session_state["visit_logged"] = True
-    log_event("app_visit")
+if "tracked" not in st.session_state:
+    st.session_state.tracked = True
+    st.session_state.session_id = str(uuid.uuid4())
+    log_event("app_visit", st.session_state.session_id)
 
 # ── SVG Icons ──────────────────────────────────────────────────────────────────
 SVG_CAR  = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1a7fa3" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;margin-right:6px"><path d="M5 17H3a2 2 0 0 1-2-2v-4l2.38-4.76A2 2 0 0 1 5.17 5h13.66a2 2 0 0 1 1.79 1.1L23 11v4a2 2 0 0 1-2 2h-2"/><circle cx="7.5" cy="17.5" r="2.5"/><circle cx="16.5" cy="17.5" r="2.5"/></svg>'
@@ -876,7 +878,7 @@ if st.download_button(
     file_name="byd_savings.pdf",
     mime="application/pdf"
 ):
-    log_event("pdf_download")
+    log_event("pdf_download", st.session_state.session_id)
 
 st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
 
