@@ -58,6 +58,8 @@ BYD_EV_MODELS = {
     "BYD DOLPHIN":   {"name": "BYD Dolphin",   "val": 12.6, "unit": "kWh/100km", "cite": "D4"},
     "BYD SEAL":      {"name": "BYD Seal",      "val": 13.8, "unit": "kWh/100km", "cite": "D5"},
     "BYD SEALION 7": {"name": "BYD Sealion 7", "val": 17.9, "unit": "kWh/100km", "cite": "D6"},
+    "BYD ATTO 3 EVO DYNAMIC": {"name": "BYD Atto 3 EVO Dynamic", "val": 14.9, "unit": "kWh/100km", "cite": "D7", "note": "NEDC test cycle"},
+    "BYD ATTO 3 EVO PREMIUM": {"name": "BYD Atto 3 EVO Premium", "val": 16.4, "unit": "kWh/100km", "cite": "D8"},
 }
 
 # PHEV calculation uses BOTH fuel AND electricity:
@@ -73,6 +75,10 @@ BYD_PHEV_MODELS = {
     "BYD SHARK 6":        {"name": "BYD Shark 6",        "val": 2.0, "unit": "L/100km", "wh_km": 212, "cite": "D4"},
     "BYD SEAL 6":         {"name": "BYD Seal 6",         "val": 1.1, "unit": "L/100km", "wh_km": 183, "cite": "D5"},
     "BYD SEAL 6 TOURING": {"name": "BYD Seal 6 Touring", "val": 0.8, "unit": "L/100km", "wh_km": 190, "cite": "D6"},
+    "BYD ATTO 2 DM-I PREMIUM":   {"name": "BYD Atto 2 DM-i Premium",   "val": 0.7, "unit": "L/100km", "wh_km": 173, "cite": "D7"},
+    "BYD ATTO 2 DM-I ESSENTIAL": {"name": "BYD Atto 2 DM-i Essential", "val": 1.8, "unit": "L/100km", "wh_km": 168, "cite": "D8"},
+    "BYD M9 PREMIUM":            {"name": "BYD M9 Premium",            "val": 0.4, "unit": "L/100km", "wh_km": 224, "cite": "D9"},
+    "BYD M9 DYNAMIC":            {"name": "BYD M9 Dynamic",            "val": 2.7, "unit": "L/100km", "wh_km": 192, "cite": "D10"},
 }
 
 # ── CSS ────────────────────────────────────────────────────────────────────────
@@ -213,62 +219,22 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span { color:white!important; }
 [data-testid="stSidebar"] div[role="radiogroup"] > label > div:first-child { display:none!important; }
 
-/* Force all vehicle radio containers — and every ancestor — to full width */
-[data-testid="stMain"] [data-testid="stVerticalBlock"],
-[data-testid="stMain"] [data-testid="element-container"],
-[data-testid="stMain"] [data-testid="stRadio"],
-[data-testid="stMain"] [data-testid="stRadio"] > div[role="radiogroup"] {
-    width:100%!important; max-width:100%!important; box-sizing:border-box!important;
-}
-/* All vehicle card grids: unified 3-column layout */
-[data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child),
-[data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(5):last-child),
-[data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(6):last-child) {
-    display:grid!important; grid-template-columns:repeat(3,1fr)!important; gap:10px!important;
-}
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
+/* Dropdown selectors */
+[data-testid="stMain"] [data-testid="stSelectbox"] { margin-bottom:6px; }
+[data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div {
     background:white!important; border:1.5px solid #e2eaf4!important;
-    border-radius:14px!important; padding:14px 16px!important;
-    cursor:pointer!important; min-height:78px!important;
-    box-sizing:border-box!important; display:flex!important;
-    flex-direction:column!important; justify-content:center!important;
-    align-items:flex-start!important;
-    transition:all 0.18s ease!important; width:100%!important;
+    border-radius:12px!important; min-height:52px!important;
     box-shadow:0 2px 8px rgba(0,0,0,0.05)!important;
+    font-size:0.9rem!important; font-weight:600!important; color:#1a1a2e!important; align-items:center!important;
+    transition:all 0.18s ease!important;
 }
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
-    border-color:#29B5E8!important;
-    box-shadow:0 6px 20px rgba(41,181,232,0.2)!important;
-    transform:translateY(-2px)!important;
+[data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div:hover,
+[data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div:focus-within {
+    border-color:#29B5E8!important; box-shadow:0 4px 14px rgba(41,181,232,0.2)!important;
 }
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
-    background:linear-gradient(135deg,#0a2a5e 0%,#0e4080 100%)!important;
-    border-color:#1a5fa0!important;
-    box-shadow:0 8px 24px rgba(10,42,94,0.4)!important;
-    transform:translateY(-1px)!important;
-}
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p,
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span,
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) strong { color:white!important; }
-[data-testid="stMain"] div[role="radiogroup"] > label > div:first-child { display:none!important; }
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p {
-    margin:0 0 2px!important; line-height:1.25!important;
-    white-space:normal!important; word-break:break-word!important;
-}
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:first-child {
-    font-size:0.88rem!important; font-weight:700!important; color:#1a1a2e!important;
-}
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:nth-child(2) {
-    font-size:0.72rem!important; color:#5f6d88!important;
-}
-/* Citation superscript paragraph */
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:nth-child(3) {
-    font-size:0.58rem!important; color:#1a7fa3!important; font-weight:700!important;
-    margin:1px 0 0!important; line-height:1!important; letter-spacing:0.5px!important;
-}
-[data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) > div:last-child > div > p:nth-child(3) {
-    color:rgba(255,255,255,0.65)!important;
-}
+[data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] span,
+[data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] div { color:#1a1a2e!important; }
+[data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] svg { fill:#1a7fa3!important; }
 
 /* Hero */
 .flashy-result {
@@ -463,22 +429,25 @@ h1 a[href], h2 a[href], h3 a[href], h4 a[href] { display:none!important; }
 }
 [data-theme="dark"] [data-testid="stSidebar"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p { color:white!important; }
 
-[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
+[data-theme="dark"] [data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div {
     background:#1a2740!important; border-color:#2a3d58!important; box-shadow:none!important;
 }
-[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:hover {
-    border-color:#29B5E8!important; box-shadow:0 6px 20px rgba(41,181,232,0.15)!important;
+[data-theme="dark"] [data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div:hover,
+[data-theme="dark"] [data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div:focus-within {
+    border-color:#29B5E8!important;
 }
-[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:first-child { color:#e2e8f0!important; }
-[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label > div:last-child > div > p:last-child { color:#6a88a8!important; }
-[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) {
-    background:linear-gradient(135deg,#0a2a5e 0%,#1a4a8a 100%)!important;
-    border-color:#29B5E8!important; box-shadow:0 8px 24px rgba(10,42,94,0.5)!important;
-}
-[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) p,
-[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) span,
-[data-theme="dark"] [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label:has(input:checked) strong { color:white!important; }
+[data-theme="dark"] [data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] span,
+[data-theme="dark"] [data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] div { color:#e2e8f0!important; }
+[data-theme="dark"] [data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] svg { fill:#8aa0bc!important; }
 
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) [data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] > div {
+        background:#1a2740!important; border-color:#2a3d58!important; box-shadow:none!important;
+    }
+    :root:not([data-theme="light"]) [data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] span,
+    :root:not([data-theme="light"]) [data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] div { color:#e2e8f0!important; }
+    :root:not([data-theme="light"]) [data-testid="stMain"] [data-testid="stSelectbox"] div[data-baseweb="select"] svg { fill:#8aa0bc!important; }
+}
 [data-theme="dark"] .segment-header { color:#8aa0bc; }
 [data-theme="dark"] .segment-header svg path { stroke:#8aa0bc; }
 [data-theme="dark"] .metric-card { background:#141e30; border-color:#1e2d45; border-left-color:#29B5E8; }
@@ -520,25 +489,6 @@ h1 a[href], h2 a[href], h3 a[href], h4 a[href] { display:none!important; }
     .flash_cite { font-size: 1.0rem !important; }
     .flash_label { letter-spacing: 4px !important; font-size: 0.82rem !important; }
     .flashy-result { padding: 28px 20px !important; }
-
-    /* All vehicle grids: 2-col on mobile, full width, uniform 96px rows */
-    [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(4):last-child),
-    [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(5):last-child),
-    [data-testid="stMain"] div[role="radiogroup"]:has(> label:nth-child(6):last-child) {
-        grid-template-columns: repeat(2, 1fr) !important;
-        grid-auto-rows: 96px !important;
-        width: 100% !important;
-        box-sizing: border-box !important;
-        gap: 10px !important;
-    }
-    /* Clip cards to the row height so wrapping text can't push them taller */
-    [data-testid="stMain"] div[data-testid="stRadio"] > div[role="radiogroup"] > label {
-        height: 96px !important;
-        min-height: 96px !important;
-        max-height: 96px !important;
-        overflow: hidden !important;
-        box-sizing: border-box !important;
-    }
 
     /* Metric cards: reduce font size slightly */
     .metric-value, .metric-value-green { font-size: 1.4rem !important; }
@@ -652,11 +602,8 @@ st.sidebar.caption("Default: AEMO national average. Enter your plan's rate for a
 
 st.markdown('<p class="segment-header">' + SVG_CAR + ' Current ICE Segment</p>', unsafe_allow_html=True)
 ice_card_keys = list(ICE_SEGMENTS.keys())
-ice_options = [
-    "**" + k + "**\n\n" + str(v["l100"]) + " L/100km\n\n[" + v["cite"] + "]"
-    for k, v in ICE_SEGMENTS.items()
-]
-ice_sel = st.radio("ice_seg", ice_options, index=3, label_visibility="collapsed", key="ice_radio")
+ice_options = [v["name"] + " — " + str(v["l100"]) + " L/100km [" + v["cite"] + "]" for v in ICE_SEGMENTS.values()]
+ice_sel = st.selectbox("ice_seg", ice_options, index=3, label_visibility="collapsed", key="ice_radio")
 ice_idx = ice_options.index(ice_sel)
 selected_ice_card = ice_card_keys[ice_idx]
 ice_data = ICE_SEGMENTS[selected_ice_card]
@@ -668,10 +615,10 @@ if mode == "PHEV":
     st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD PHEV Model</p>', unsafe_allow_html=True)
     byd_card_keys = list(BYD_PHEV_MODELS.keys())
     byd_options = [
-        "**" + k + "**\n\n" + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km\n\n[" + v["cite"] + "]"
-        for k, v in BYD_PHEV_MODELS.items()
+        v["name"] + " — " + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km [" + v["cite"] + "]"
+        for v in BYD_PHEV_MODELS.values()
     ]
-    byd_sel = st.radio("byd_phev", byd_options, index=0, label_visibility="collapsed", key="phev_radio")
+    byd_sel = st.selectbox("byd_phev", byd_options, index=0, label_visibility="collapsed", key="phev_radio")
     byd_idx = byd_options.index(byd_sel)
     selected_byd_card = byd_card_keys[byd_idx]
     byd_data = BYD_PHEV_MODELS[selected_byd_card]
@@ -679,10 +626,10 @@ else:
     st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD EV Model</p>', unsafe_allow_html=True)
     byd_card_keys = list(BYD_EV_MODELS.keys())
     byd_options = [
-        "**" + k + "**\n\n" + str(v["val"]) + " " + v["unit"] + "\n\n[" + v["cite"] + "]"
-        for k, v in BYD_EV_MODELS.items()
+        v["name"] + " — " + str(v["val"]) + " " + v["unit"] + " [" + v["cite"] + "]"
+        for v in BYD_EV_MODELS.values()
     ]
-    byd_sel = st.radio("byd_ev", byd_options, index=0, label_visibility="collapsed", key="ev_radio")
+    byd_sel = st.selectbox("byd_ev", byd_options, index=0, label_visibility="collapsed", key="ev_radio")
     byd_idx = byd_options.index(byd_sel)
     selected_byd_card = byd_card_keys[byd_idx]
     byd_data = BYD_EV_MODELS[selected_byd_card]
@@ -814,7 +761,7 @@ def generate_pdf():
     if mode == "PHEV":
         cite_lines.append("[S1] PHEV = km x (L/100km/100 x Fuel$ + Wh/km/1000 x Elec$)")
     if mode == "EV":
-        cite_lines.append("  ".join("[D"+str(i)+"] "+v["name"]+": "+str(v["val"])+" kWh/100km"
+        cite_lines.append("  ".join("[D"+str(i)+"] "+v["name"]+": "+str(v["val"])+" kWh/100km"+(" ("+v["note"]+")" if v.get("note") else "")
                                     for i,(k,v) in enumerate(BYD_EV_MODELS.items(),1)))
     else:
         cite_lines.append("  ".join("[D"+str(i)+"] "+v["name"]+": "+str(v["val"])+"L+"+str(v["wh_km"])+"Wh/km"
@@ -987,7 +934,8 @@ if mode == "EV":
     for i, (k, v) in enumerate(BYD_EV_MODELS.items(), 1):
         d_cite_rows += (
             '<p class="cite-row"><span class="cite-key"><sup>[D' + str(i) + ']</sup></span> '
-            + v["name"] + ' &mdash; ' + str(v["val"]) + ' kWh/100km. '
+            + v["name"] + ' &mdash; ' + str(v["val"]) + ' kWh/100km'
+            + (' (' + v["note"] + ')' if v.get("note") else '') + '. '
             'Source: <a href="https://www.greenvehicleguide.gov.au" target="_blank">Green Vehicle Guide</a></p>'
         )
 else:
