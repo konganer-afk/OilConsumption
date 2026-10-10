@@ -787,7 +787,8 @@ def generate_pdf():
     pdf.ln(1)
     pdf.set_font("Helvetica", "", 6)
     pdf.set_text_color(150, 150, 150)
-    pdf.cell(0, 4, "General estimates only. Not financial advice. Sources: ABS, DISER, AEMO, Green Vehicle Guide.", ln=True, align="C")
+    pdf.multi_cell(0, 3.5, "Estimated savings are indicative only and may vary depending on individual driving habits, vehicle usage and energy prices. Sources: ABS, DISER, AEMO, Green Vehicle Guide.", align="C")
+    pdf.cell(0, 4, "Developed by the Australian TJ Team", ln=True, align="C")
 
     return bytes(pdf.output())
 
@@ -1042,4 +1043,5 @@ st.markdown(assumptions_html, unsafe_allow_html=True)
 
 # ── Footer ─────────────────────────────────────────────────────────────────────
 st.markdown("---")
-st.caption("General estimates only. Not financial advice. Data sources: ABS, DISER, AEMO, Green Vehicle Guide.")
+st.caption("Estimated savings are indicative only and may vary depending on individual driving habits, vehicle usage and energy prices. Data sources: ABS, DISER, AEMO, Green Vehicle Guide.")
+st.caption("Developed by the Australian TJ Team")
