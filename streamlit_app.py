@@ -787,8 +787,10 @@ def generate_pdf():
     pdf.ln(1)
     pdf.set_font("Helvetica", "", 6)
     pdf.set_text_color(150, 150, 150)
-    pdf.multi_cell(0, 3.5, "Estimated savings are indicative only and may vary depending on individual driving habits, vehicle usage and energy prices. Sources: ABS, DISER, AEMO, Green Vehicle Guide.", align="C")
-    pdf.cell(0, 4, "Developed by the Australian TJ Team", ln=True, align="C")
+    pdf.set_x(12)
+    pdf.multi_cell(W, 3.5, "Estimated savings are indicative only and may vary depending on individual driving habits, vehicle usage and energy prices. Sources: ABS, DISER, AEMO, Green Vehicle Guide.", align="C", new_x="LMARGIN", new_y="NEXT")
+    pdf.set_x(12)
+    pdf.cell(W, 4, "Developed by the Australian TJ Team", ln=True, align="C")
 
     return bytes(pdf.output())
 
