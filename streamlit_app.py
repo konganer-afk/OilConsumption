@@ -4,6 +4,7 @@ import altair as alt
 from fpdf import FPDF
 import gspread
 import uuid
+import re
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 
@@ -310,6 +311,7 @@ html, body, [class*="css"], .stApp { font-family:'Montserrat',sans-serif!importa
 .metric-sub { font-size:0.71rem; color:#888896; margin:3px 0 0; }
 .metric-sub-green { font-size:0.71rem; color:#22a355; margin:3px 0 0; }
 .metric-delta { font-size:0.82rem; color:#e05050; margin:2px 0 0; font-weight:700; }
+sup { font-weight:700!important; }
 .cite-tag { font-size:0.6rem; color:#1a7fa3; font-weight:700; vertical-align:super; margin-left:2px; }
 
 /* Assumptions */
@@ -605,11 +607,15 @@ ctrl_label(ICO_BOLT, "Electricity Price (AUD/kWh)")
 elec_price = st.sidebar.number_input("Electricity Price (AUD/kWh)", value=0.30, step=0.01, placeholder="0.30", label_visibility="collapsed")
 st.sidebar.caption("Default: AEMO national average. Enter your plan's rate for accuracy.")
 
+_SUP = str.maketrans("ID0123456789[]", "ᴵᴰ⁰¹²³⁴⁵⁶⁷⁸⁹⁽⁾")
+def sup_ref(code):
+    return ("[" + code + "]").translate(_SUP)
+
 # ── Card Selectors ─────────────────────────────────────────────────────────────
 
 st.markdown('<p class="segment-header">' + SVG_CAR + ' Current ICE Segment</p>', unsafe_allow_html=True)
 ice_card_keys = list(ICE_SEGMENTS.keys())
-ice_options = [v["name"] + " — " + str(v["l100"]) + " L/100km [" + v["cite"] + "]" for v in ICE_SEGMENTS.values()]
+ice_options = [v["name"] + " — " + str(v["l100"]) + " L/100km " + sup_ref(v["cite"]) for v in ICE_SEGMENTS.values()]
 ice_sel = st.selectbox("ice_seg", ice_options, index=ice_card_keys.index("AVERAGE SMALL SUV"), label_visibility="collapsed", key="ice_radio")
 ice_idx = ice_options.index(ice_sel)
 selected_ice_card = ice_card_keys[ice_idx]
@@ -622,7 +628,7 @@ if mode == "PHEV":
     st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD PHEV Model</p>', unsafe_allow_html=True)
     byd_card_keys = list(BYD_PHEV_MODELS.keys())
     byd_options = [
-        v["name"] + " — " + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km [" + v["cite"] + "]"
+        v["name"] + " — " + str(v["val"]) + " L/100km + " + str(v["wh_km"]) + " Wh/km " + sup_ref(v["cite"])
         for v in BYD_PHEV_MODELS.values()
     ]
     byd_sel = st.selectbox("byd_phev", byd_options, index=0, label_visibility="collapsed", key="phev_radio")
@@ -633,7 +639,7 @@ else:
     st.markdown('<p class="segment-header">' + SVG_BOLT + ' Target BYD EV Model</p>', unsafe_allow_html=True)
     byd_card_keys = list(BYD_EV_MODELS.keys())
     byd_options = [
-        v["name"] + " — " + str(v["val"]) + " " + v["unit"] + " [" + v["cite"] + "]"
+        v["name"] + " — " + str(v["val"]) + " " + v["unit"] + " " + sup_ref(v["cite"])
         for v in BYD_EV_MODELS.values()
     ]
     byd_sel = st.selectbox("byd_ev", byd_options, index=0, label_visibility="collapsed", key="ev_radio")
@@ -679,6 +685,29 @@ def generate_pdf():
     pdf.ln(5)
     pdf.set_text_color(30, 30, 30)
 
+    REF_RE = re.compile(r"(\[[A-Z]\d+\])")
+
+    def write_rich(h, text):
+        for seg in REF_RE.split(text):
+            if not seg:
+                continue
+            if REF_RE.fullmatch(seg):
+                with pdf.local_context(font_style="B", char_vpos="SUP"):
+                    pdf.write(h, seg)
+            else:
+                pdf.write(h, seg)
+
+    def rcell(w, h, text, border=1, fill=False, ln=False):
+        x, y = pdf.get_x(), pdf.get_y()
+        pdf.cell(w, h, "", border=border, fill=fill)
+        end_x = pdf.get_x()
+        pdf.set_xy(x + pdf.c_margin, y)
+        write_rich(h, text)
+        if ln:
+            pdf.set_xy(pdf.l_margin, y + h)
+        else:
+            pdf.set_xy(end_x, y)
+
     def section_title(title):
         pdf.set_font("Helvetica", "B", 9)
         pdf.set_text_color(26, 127, 163)
@@ -699,9 +728,9 @@ def generate_pdf():
     ]
     for label, value in rows_sel:
         pdf.set_fill_color(240, 247, 255)
-        pdf.cell(sel_lw, 5, label, border=1, fill=True)
+        rcell(sel_lw, 5, label, fill=True)
         pdf.set_fill_color(255, 255, 255)
-        pdf.cell(sel_vw, 5, value, border=1, fill=True, ln=True)
+        rcell(sel_vw, 5, value, fill=True, ln=True)
     pdf.ln(2)
 
     # ── Results (full width) ──
@@ -723,7 +752,7 @@ def generate_pdf():
     for lbl, val, ref in rows_res:
         pdf.cell(rw[0], 5, lbl, border=1)
         pdf.cell(rw[1], 5, val, border=1)
-        pdf.cell(rw[2], 5, ref, border=1, ln=True)
+        rcell(rw[2], 5, ref, ln=True)
     pdf.ln(2)
 
     # ── Assumptions ──
@@ -747,7 +776,7 @@ def generate_pdf():
         assumption_rows.insert(4, ("[" + byd_cite + "]", byd_name + " Electricity", str(byd_wh_km) + " Wh/km", "Green Vehicle Guide"))
     for row in assumption_rows:
         for i, cell in enumerate(row):
-            pdf.cell(col_w4[i], 5, cell, border=1)
+            rcell(col_w4[i], 5, cell)
         pdf.ln()
     pdf.ln(2)
 
@@ -771,8 +800,9 @@ def generate_pdf():
         cite_lines.append("  ".join("[D"+str(i)+"] "+v["name"]+": "+str(v["val"])+"L+"+str(v["wh_km"])+"Wh/km"
                                     for i,(k,v) in enumerate(BYD_PHEV_MODELS.items(),1)))
     for line in cite_lines:
-        pdf.set_x(12)
-        pdf.multi_cell(W, 4, line)
+        pdf.set_x(pdf.l_margin)
+        write_rich(4, line)
+        pdf.ln(4)
     pdf.ln(2)
 
     # ── Disclaimer ──
